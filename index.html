@@ -4,6 +4,7 @@
 <script src="https://code.jquery.com/jquery-3.7.1.js" integrity="sha256-eKhayi8LEQwp4NKxN+CfCh+3qOVUtJn3QNZ0TciWLP4=" crossorigin="anonymous"></script>
 
 <script src="js/sprite.js"></script>
+<script src="js/boid.js"></script>
 
 
 </head>
@@ -42,7 +43,7 @@
         //sprites_to_draw[1].push( new Sprite(data, 0 ,0, "idleSpin") );
         //sprites_to_draw[1].push( new Sprite(data, 100 ,100, "idleWave") );
 
-        setTimeout(() => {
+        //setTimeout(() => {
                 for(var i = 0;i< states.length;i++){
                     for(var j = 0; j < data["TenderBud"][states[i]].length; j++){
                         console.log("loading");
@@ -50,14 +51,20 @@
                         data["TenderBud"][states[i]][j]['img'].src = 'Penguins/TenderBud/' + states[i] + '/' + j + '.png';
                     }
                 }
-            }, "500");
+            //}, "500");
 
+        
+        for(var i = 0; i < 10;i++){
+            sprites_to_draw[1].push( new boid(data, "idleSpin") );
+        }
+        
         sprites_to_draw[1].push( new Sprite(data, 150 ,600, "idleSpin") );
-
+        
     });
 
 
     $( document ).ready(function() {
+        
         console.log( "Page is now ready" );
         resize();
 
@@ -66,7 +73,11 @@
             ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
         };
         img.src = 'imgs/bk.jpg';
-        draw_loop_timeout = setInterval(draw_loop, 33);
+        //draw_loop_timeout = setInterval(draw_loop, 33);
+
+        setTimeout(() => {
+            requestAnimationFrame(draw_loop);
+        }, "1000");
     });
 
     window.addEventListener('resize', resize);
@@ -139,8 +150,13 @@
                                           'key_press' : key_press
                                         }
             );
+
+            if (typeof sprites_to_draw[1][i].flock === "function") { 
+                sprites_to_draw[1][i].flock(sprites_to_draw[1]);
+            }
         }
         
+        requestAnimationFrame(draw_loop);
     }
 
     
