@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html>
+<head>
+<script src="https://code.jquery.com/jquery-3.7.1.js" integrity="sha256-eKhayi8LEQwp4NKxN+CfCh+3qOVUtJn3QNZ0TciWLP4=" crossorigin="anonymous"></script>
+
+<script src="js/sprite.js"></script>
+
+
+</head>
+<body style="">
+<canvas id='mycanvas' style="">
+</canvas>
+
+
+<script>
+    const canvas = document.querySelector("canvas");
+    const sprites_to_draw = new Array(2); 
+    var draw_loop_timeout;
+    var img = new Image();
+	var current_state = "idle";
+    
+    sprites_to_draw[0] = new Array(0); //background and 
+    sprites_to_draw[1] = new Array(0); //forground
+
+    $.getJSON( "Penguins/animationData.json", function( data ) {
+		console.log(data);
+        //sprites_to_draw[1].push( new Sprite(data, 0 ,0, "idleSpin") );
+        //sprites_to_draw[1].push( new Sprite(data, 100 ,100, "idleWave") );
+        sprites_to_draw[1].push( new Sprite(data, 150 ,600, "idle") );
+
+    });
+
+
+    $( document ).ready(function() {
+        console.log( "Page is now ready" );
+        resize();
+
+        img.onload = function() {
+            var ctx = canvas.getContext('2d');
+            ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+        };
+        img.src = 'imgs/bk.jpg';
+        draw_loop_timeout = setInterval(draw_loop, 33);
+		// Input handling
+		setInterval(handle_input, 33);
+    });
+
+    window.addEventListener('resize', resize);
+
+    function draw_loop(){
+        
+        var background_length = sprites_to_draw[0].length;
+        var forground_length  = sprites_to_draw[1].length;
+        var has_background_changed = false;
+			
+        //Draw background sprites
+        for(var i = 0; i < background_length; i++){
+            sprites_to_draw[0][i].draw();
+        }
+
+        //Draw forground sprites
+        for(var i = 0; i < forground_length; i++){
+            sprites_to_draw[1][i].draw(current_state);
+        }
+    }
+
+    function resize(){
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+
+    }
+	
+	const up_arrow = 38;
+	const down_arrow = 40;
+	const left_arrow = 37;
+	const right_arrow = 39;
+
+	var x_velocity = 0;
+	var y_velocity = 0;
+	var speed = 10;
+	
+	var up_pressed = false;
+	var down_pressed = false;
+	var left_pressed = false;
+	var right_pressed = false;
+	
+	function handle_input() { 
+		x_velocity = 0;
+		y_velocity = 0;
+		
+		// north
+		if (up_pressed && !down_pressed && !left_pressed && !right_pressed) {
+			y_velocity = -speed;
+			current_state = 'walk_N';
+		} 
+		// south 
+		if (down_pressed && !up_pressed && !left_pressed && !right_pressed) { 
+			y_velocity = speed;
+			current_state = 'walk_S';
+		}
+		// west
+		if (left_pressed && !down_pressed && !up_pressed && !right_pressed) { 
+			x_velocity = -speed;
+			current_state = 'walk_W';
+		} 
+		// east 
+		if (right_pressed && !down_pressed && !left_pressed && !up_pressed) { 
+			x_velocity = speed;
+			current_state = 'walk_E';
+		}
+		// north east 
+		if (up_pressed && right_pressed) {
+			y_velocity = -speed;
+			x_velocity = speed;
+			current_state = 'walk_NE';
+		}
+		// south east 
+		if (down_pressed && right_pressed) {
+			y_velocity = speed;
+			x_velocity = speed;
+			current_state = 'walk_SE';
+		}
+		// sorth west 
+		if (left_pressed && down_pressed) {
+			y_velocity = speed;
+			x_velocity = -speed;
+			current_state = 'walk_SW';
+		}
+		// north west
+		if (up_pressed && left_pressed) {
+			y_velocity = -speed;
+			x_velocity = -speed;
+			current_state = 'walk_NW';
+		}
+		
+		// no presses
+		if (!up_pressed && !down_pressed && !left_pressed && !right_pressed) {
+			// sprites_to_draw[1][0].set_state('idle');
+			current_state = 'idle';
+		}
+		
+		sprites_to_draw[1][0].set_x_v(x_velocity);
+		sprites_to_draw[1][0].set_y_v(y_velocity);
+	}
+
+	// Player input key down 
+	document.body.onkeydown = function(e){
+		// Stop the page from scrolling when the arrow keys are pressed
+		if (e.keyCode == 37 || e.keyCode == 38 || e.keyCode == 39 || e.keyCode == 40) {
+			e.preventDefault();
+		}
+		if (e.keyCode == up_arrow) {
+			up_pressed = true;
+		}
+		if (e.keyCode == down_arrow) {
+			down_pressed = true;
+		}
+		if (e.keyCode == left_arrow) {
+			left_pressed = true;
+		}
+		if (e.keyCode == right_arrow) {
+			right_pressed = true;
+		}
+		// alert(String.fromCharCode(e.keyCode)+" --> "+e.keyCode);
+	}
+	
+	// Player input key up	
+	document.body.onkeyup = function(e){
+		// Stop the page from scrolling when the arrow keys are pressed
+		if (e.keyCode == 37 || e.keyCode == 38 || e.keyCode == 39 || e.keyCode == 40) {
+			e.preventDefault();
+		}
+		if (e.keyCode == up_arrow) {
+			up_pressed = false;
+		}
+		if (e.keyCode == down_arrow) {
+			down_pressed = false;
+		}
+		if (e.keyCode == left_arrow) {
+			left_pressed = false;
+		}
+		if (e.keyCode == right_arrow) {
+			right_pressed = false;
+		}
+		// alert(String.fromCharCode(e.keyCode)+" --> "+e.keyCode);
+	}
+		
+</script>
+
+</body>
+</html>
