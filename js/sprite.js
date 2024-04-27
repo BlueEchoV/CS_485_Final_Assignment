@@ -66,7 +66,7 @@ class Sprite {
 		this.state = new_state;
 	}
 
-    draw(new_state){
+    draw_Sprite(new_state){
 		if (this.images_Loaded) {
 			if (new_state == 'idle' && !this.is_idle) {
 				this.cur_frame = 0;

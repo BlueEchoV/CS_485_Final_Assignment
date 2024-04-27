@@ -1,10 +1,11 @@
 <!DOCTYPE html>
 <html>
 <head>
-<script src="https://code.jquery.com/jquery-3.7.1.js" integrity="sha256-eKhayi8LEQwp4NKxN+CfCh+3qOVUtJn3QNZ0TciWLP4=" crossorigin="anonymous"></script>
-
-<script src="js/sprite.js"></script>
-
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.4.0/p5.js"></script>
+	<script src="https://code.jquery.com/jquery-3.7.1.js" integrity="sha256-eKhayi8LEQwp4NKxN+CfCh+3qOVUtJn3QNZ0TciWLP4=" crossorigin="anonymous"></script>
+	<script src="js/sprite.js"></script>
+	<script src="js/boids.js"></script>
+	<script src="js/sketch.js"></script>
 
 </head>
 <body style="">
@@ -13,42 +14,68 @@
 
 
 <script>
-    const canvas = document.querySelector("canvas");
-    const sprites_to_draw = new Array(2); 
+//     const canvas = document.querySelector("canvas");
     var draw_loop_timeout;
     var img = new Image();
 	var current_state = "idle";
     
-    sprites_to_draw[0] = new Array(0); //background and 
-    sprites_to_draw[1] = new Array(0); //forground
+	let v1 = new p5.Vector(1, 2, 3);
+	console.log(v1);
+	let v3 = p5.Vector.add(v1, v1);
+	console.log(v3);
+//     sprites_to_draw[0] = new Array(0); //background and 
+//     sprites_to_draw[1] = new Array(0); //forground
 
-    $.getJSON( "Penguins/animationData.json", function( data ) {
-		console.log(data);
-        //sprites_to_draw[1].push( new Sprite(data, 0 ,0, "idleSpin") );
-        //sprites_to_draw[1].push( new Sprite(data, 100 ,100, "idleWave") );
-        sprites_to_draw[1].push( new Sprite(data, 150 ,600, "idle") );
+//     $.getJSON( "Penguins/animationData.json", function( data ) {
+// 		// console.log(data);
+//         //sprites_to_draw[1].push( new Sprite(data, 0 ,0, "idleSpin") );
+//         //sprites_to_draw[1].push( new Sprite(data, 100 ,100, "idleWave") );
+// 		// Calls preload in here
+//         sprites_to_draw[1].push( new Sprite(data, 150 ,600, "idle") );
+// 
+//     });
 
-    });
 
+ //   $( document ).ready(function() {
+ //       console.log( "Page is now ready" );
+ //       resize();
+ //
+ //       img.onload = function() {
+ //           var ctx = canvas.getContext('2d');
+ //           ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+ //       };
+ //       img.src = 'imgs/bk.jpg';
+ //       draw_loop_timeout = setInterval(draw, 33);
+//		// Input handling
+//		setInterval(handle_input, 33);
+ //   });
 
-    $( document ).ready(function() {
-        console.log( "Page is now ready" );
-        resize();
+//    window.addEventListener('resize', resize);
+	
+// 	function draw() {
+// 		var background_length = sprites_to_draw[0].length;
+//         var forground_length  = sprites_to_draw[1].length;
+//         var has_background_changed = false;
+// 			
+//         //Draw background sprites
+//         for(var i = 0; i < background_length; i++){
+//             sprites_to_draw[0][i].draw();
+//         }
+// 
+//         //Draw forground sprites
+//         for(var i = 0; i < forground_length; i++){
+//             sprites_to_draw[1][i].draw(current_state);
+//         }
+// 		
+// 		for (let boid of flock) {
+// 			 boid.show();
+// 		}
+// 		// handle_input()
+// 	}
 
-        img.onload = function() {
-            var ctx = canvas.getContext('2d');
-            ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
-        };
-        img.src = 'imgs/bk.jpg';
-        draw_loop_timeout = setInterval(draw_loop, 33);
-		// Input handling
-		setInterval(handle_input, 33);
-    });
+	// NOT CURRENTLY USING
+    function draw_loop() {
 
-    window.addEventListener('resize', resize);
-
-    function draw_loop(){
-        
         var background_length = sprites_to_draw[0].length;
         var forground_length  = sprites_to_draw[1].length;
         var has_background_changed = false;
@@ -62,6 +89,8 @@
         for(var i = 0; i < forground_length; i++){
             sprites_to_draw[1][i].draw(current_state);
         }
+		
+		setup();
     }
 
     function resize(){
@@ -139,6 +168,7 @@
 			current_state = 'idle';
 		}
 		
+		console.log(sprites_to_draw[1][0]);
 		sprites_to_draw[1][0].set_x_v(x_velocity);
 		sprites_to_draw[1][0].set_y_v(y_velocity);
 	}
