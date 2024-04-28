@@ -14,7 +14,6 @@ class Sprite {
         this.x_v = 0;
         this.y_v = 0;
 
-        
 
         this.idle = false;
 
@@ -100,10 +99,6 @@ class Sprite {
             }
         }
 
-        
-        
-        
-
         return false;
         
     }
@@ -119,8 +114,7 @@ class Sprite {
         console.log(idle_state[random]);
         this.state = idle_state[random];
         this.cur_frame = 0;
-        
-        
+
     }
 
     bound_hit(side){
@@ -145,9 +139,6 @@ class Sprite {
             } else {
                 this.x_v = 0;
             }
-
-            
-
     }
 
     update_animation(){
