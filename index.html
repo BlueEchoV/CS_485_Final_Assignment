@@ -14,50 +14,48 @@
     var bkg_Img = new Image();
 	var firefly_Img = new Image();
 
-    const up_arrow = 38;
-    const down_arrow = 40;
-    const left_arrow = 37;
-    const right_arrow = 39;
-
     const states = ["idle","idleBackAndForth","idleBreathing","idleFall","idleLayDown","idleLookAround","idleLookDown","idleLookLeft",
     "idleLookRight","idleLookUp","idleSit","idleSpin","idleWave","walk_E","walk_N","walk_NE","walk_NW","walk_S","walk_SE","walk_SW","walk_W"];
 
     var key_change = false;
     var key_num = [];
 
-    var key_press = { 'UP' : null,
-								'RIGHT' : null,
-								'LEFT' : null,
-								'DOWN' : null
-                                }
+    var key_press = { 
+							'UP' : null,
+							'RIGHT' : null,
+							'LEFT' : null,
+							'DOWN' : null
+							}
     
     sprites_to_draw[0] = new Array(0); //background and 
     sprites_to_draw[1] = new Array(0); //forground
 	const flock = [];
 
+	var player_Img = new Image();
     $.getJSON( "Penguins/animationData.json", function( data ) {
-		for(var i = 0;i< states.length;i++){
-			for(var j = 0; j < data["TenderBud"][states[i]].length; j++){
-				console.log("loading");
-				data["TenderBud"][states[i]][j]['img'] = new Image();
-				data["TenderBud"][states[i]][j]['img'].src = 'Penguins/TenderBud/' + states[i] + '/' + j + '.png';
-			}
-		}
+		//for(var i = 0;i< states.length;i++){
+		//	for(var j = 0; j < data["TenderBud"][states[i]].length; j++){
+		//		console.log("loading");
+		//		data["TenderBud"][states[i]][j]['img'] = new Image();
+		//		data["TenderBud"][states[i]][j]['img'].src = 'Penguins/TenderBud/' + states[i] + '/' + j + '.png';
+		//	}
+		//}
+		player_Img.src = "player_Imgs/idle/0.png";
         firefly_Img.src = 'firefly.png';
         // firefly_Img.src = 'spider.png';
 		
-		for (let i = 0; i < 50; i++) {
-			flock.push(new Boid(firefly_Img));
-		}
         // for(var i = 0; i < 10;i++){
         //     sprites_to_draw[1].push( new boid(firefly_Img) );
         // }
-        // sprites_to_draw[1].push( new Sprite(data, 150 ,600, "idleSpin") );
-        
     });
 
     $( document ).ready(function() {
-        console.log( "Page is now ready" );
+		console.log( "Page is now ready" );
+		for (let i = 0; i < 50; i++) {
+			flock.push(new Boid(firefly_Img));
+		}
+		sprites_to_draw[1].push( new Sprite(player_Img) );
+		
         resize();
 
         bkg_Img.onload = function() {
@@ -98,44 +96,7 @@
             has_background_changed = sprites_to_draw[0][i].draw();
         }
 
-		 // Input handling
-        document.body.onkeydown = function(e){
-            if(e.keyCode == up_arrow){
-                key_change = true;
-                key_press["UP"] = e.keyCode;
-            } 
-            if(e.keyCode == right_arrow){
-                //alert(String.fromCharCode(e.keyCode)+" --> "+e.keyCode);
-                key_change = true;
-                key_press["RIGHT"] = e.keyCode;
-            }
-            if(e.keyCode == left_arrow){
-                key_change = true;
-                key_press["LEFT"] = e.keyCode;
-            }
-            if(e.keyCode == down_arrow){
-                key_change = true;
-                key_press["DOWN"] = e.keyCode;
-            }
-        };
-        document.body.onkeyup = function(e){
-            if(key_press["UP"] == e.keyCode){
-                key_press["UP"] = null;
-            }
-            if(key_press["RIGHT"] == e.keyCode){
-                key_press["RIGHT"] = null;
-            }
-            if(key_press["LEFT"] == e.keyCode){
-                key_press["LEFT"] = null;
-            }
-            if(key_press["DOWN"] == e.keyCode){
-                key_press["DOWN"] = null;
-            }
-
-            if(key_press["UP"] == null && key_press["RIGHT"] == null && key_press["LEFT"] == null && key_press["DOWN"] == null){
-                key_change = false;
-            }
-        };
+		handle_input();
 
         // Draw forground sprites
 		// Loop through the whole array
@@ -146,20 +107,135 @@
             //}
 			// Each sprite has a draw method
 			// 
-            sprites_to_draw[1][i].draw('idle');
+            sprites_to_draw[1][i].draw();
         }
         
 		draw_Boids(flock);
 		
         requestAnimationFrame(draw_loop);
     }
+	
+	const up_arrow = 38;
+	const down_arrow = 40;
+	const left_arrow = 37;
+	const right_arrow = 39;
 
-    
+	var x_velocity = 0;
+	var y_velocity = 0;
+	var speed = 2;
+	
+	var up_pressed = false;
+	var down_pressed = false;
+	var left_pressed = false;
+	var right_pressed = false;
+	
+	function handle_input() { 
+		x_velocity = 0;
+		y_velocity = 0;
+		
+		// north
+		if (up_pressed && !down_pressed && !left_pressed && !right_pressed) {
+			y_velocity = -speed;
+			// States for when I capture my player's new animations
+			current_state = 'walk_N';
+		} 
+		// south 
+		if (down_pressed && !up_pressed && !left_pressed && !right_pressed) { 
+			y_velocity = speed;
+			current_state = 'walk_S';
+		}
+		// west
+		if (left_pressed && !down_pressed && !up_pressed && !right_pressed) { 
+			x_velocity = -speed;
+			current_state = 'walk_W';
+		} 
+		// east 
+		if (right_pressed && !down_pressed && !left_pressed && !up_pressed) { 
+			x_velocity = speed;
+			current_state = 'walk_E';
+		}
+		// north east 
+		if (up_pressed && right_pressed) {
+			y_velocity = -speed;
+			x_velocity = speed;
+			current_state = 'walk_NE';
+		}
+		// south east 
+		if (down_pressed && right_pressed) {
+			y_velocity = speed;
+			x_velocity = speed;
+			current_state = 'walk_SE';
+		}
+		// sorth west 
+		if (left_pressed && down_pressed) {
+			y_velocity = speed;
+			x_velocity = -speed;
+			current_state = 'walk_SW';
+		}
+		// north west
+		if (up_pressed && left_pressed) {
+			y_velocity = -speed;
+			x_velocity = -speed;
+			current_state = 'walk_NW';
+		}
+		
+		// no presses
+		if (!up_pressed && !down_pressed && !left_pressed && !right_pressed) {
+			// sprites_to_draw[1][0].set_state('idle');
+			current_state = 'idle';
+		}
+		
+		// console.log(sprites_to_draw[1][0]);
+		sprites_to_draw[1][0].set_x_v(x_velocity);
+		sprites_to_draw[1][0].set_y_v(y_velocity);
+	}
+		// Player input key down 
+	document.body.onkeydown = function(e){
+		// Stop the page from scrolling when the arrow keys are pressed
+		if (e.keyCode == 37 || e.keyCode == 38 || e.keyCode == 39 || e.keyCode == 40) {
+			e.preventDefault();
+		}
+		if (e.keyCode == up_arrow) {
+			up_pressed = true;
+		}
+		if (e.keyCode == down_arrow) {
+			down_pressed = true;
+		}
+		if (e.keyCode == left_arrow) {
+			left_pressed = true;
+		}
+		if (e.keyCode == right_arrow) {
+			right_pressed = true;
+		}
+		// alert(String.fromCharCode(e.keyCode)+" --> "+e.keyCode);
+	}
+	
+	// Player input key up	
+	document.body.onkeyup = function(e){
+		// Stop the page from scrolling when the arrow keys are pressed
+		if (e.keyCode == 37 || e.keyCode == 38 || e.keyCode == 39 || e.keyCode == 40) {
+			e.preventDefault();
+		}
+		if (e.keyCode == up_arrow) {
+			up_pressed = false;
+		}
+		if (e.keyCode == down_arrow) {
+			down_pressed = false;
+		}
+		if (e.keyCode == left_arrow) {
+			left_pressed = false;
+		}
+		if (e.keyCode == right_arrow) {
+			right_pressed = false;
+		}
+		// alert(String.fromCharCode(e.keyCode)+" --> "+e.keyCode);
+	}
 
     function resize(){
         canvas.width = window.innerWidth;
         canvas.height = window.innerHeight;
     }
+
 	</script>
 </body>
 </html>
