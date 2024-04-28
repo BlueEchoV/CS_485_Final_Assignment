@@ -15,15 +15,20 @@ class Boid{
 		this.acceleration_Y = 0;
 
 		// Flocking varibles
-        this.maxforce = 0.1;
+        this.maxforce = 0.01;
 		// MAKE SURE THIS IS DEFINED BEFORE WE CALL 
 		// RANDOM_POS_X
         this.maxSpeed = 2;
 		this.perception = 50;
 		
-		// Values
-		this.alignment_Scalar = 1.0;
+		// Alignment: Helps a boid to steer towards the 
+		// average heading of its local flockmates.
+		this.alignment_Scalar = 0.5;
+		// Cohesion: Draws a boid towards the average 
+		// position of nearby flockmates, promoting group cohesion.
 		this.cohesion_Scalar = 1.0;
+		// Separation: Drives a boid to move away from 
+		// flockmates that are too close, preventing overcrowding.
 		this.separation_Scalar = 1.0;
 		
 		// Image
