@@ -10,6 +10,25 @@ class Boid{
 
         this.count = 1;
 
+		// Accleration
+		this.acceleration_X = 0;
+		this.acceleration_Y = 0;
+
+		// Flocking varibles
+        this.maxforce = 0.1;
+		// MAKE SURE THIS IS DEFINED BEFORE WE CALL 
+		// RANDOM_POS_X
+        this.maxSpeed = 2;
+		this.perception = 50;
+		
+		// Values
+		this.alignment_Scalar = 1.0;
+		this.cohesion_Scalar = 1.0;
+		this.separation_Scalar = 1.0;
+		
+		// Image
+		this.img = image;
+		
 		// Random position
         this.x = this.random_pos_x();
         this.y = this.random_pos_y();
@@ -17,23 +36,6 @@ class Boid{
 		// Random velocity
         this.x_v = this.random_velo();
         this.y_v = this.random_velo();
-
-		// Accleration
-		this.acceleration_X = 0;
-		this.acceleration_Y = 0;
-
-		// Flocking varibles
-        this.maxforce = 0.2;
-        this.maxSpeed = 2;
-		this.perception = 25;
-		
-		// Values
-		this.alignment_Scalar = 1.0;
-		this.cohesion_Scalar = 0.0;
-		this.separation_Scalar = 0.0;
-		
-		// Image
-		this.img = image;
     }
 	
 	edges(width, height) {
@@ -48,6 +50,29 @@ class Boid{
 			this.y = height;
 		}
 	}
+	
+	checkCollisions(boids) {
+        for (let other of boids) {
+            if (other !== this) {
+                let dx = this.x - other.x;
+                let dy = this.y - other.y;
+                let distance = Math.sqrt(dx * dx + dy * dy);
+                let minDistance = this.img.width / 2 + this.img.width / 2;
+
+                if (distance < minDistance) {
+                    // Simple response: move away from the collision point
+                    let overlap = minDistance - distance;
+                    let adjustX = (dx / distance) * overlap / 2;
+                    let adjustY = (dy / distance) * overlap / 2;
+
+                    this.x += adjustX;
+                    this.y += adjustY;
+                    other.x -= adjustX;
+                    other.y -= adjustY;
+                }
+            }
+        }
+    }
 	
 	update() {
 		// Update velocity
@@ -69,52 +94,6 @@ class Boid{
 		this.acceleration_X = 0;
 		this.acceleration_Y = 0;
 	}
-	
-	// Testing
-	draw(){
-        var ctx = canvas.getContext('2d');
-            
-        ctx.drawImage(this.img, this.x, this.y );
-
-		//Screen border checks
-		// Toroidal
-		//If we're not idle, then we should be moving!
-		this.x += this.x_v;
-		this.y += this.y_v;
-
-		this.x_v += this.acceleration_X;
-		this.y_v += this.acceleration_Y;
-
-		this.acceleration_X = 0;
-		this.acceleration_Y = 0;
-
-		//limit x magnitude to a max of maxForce
-		if(this.x_v < -this.maxforce){
-			this.x_v = -this.maxforce;
-		} else if(this.x_v > this.maxforce){
-			this.x_v = this.maxforce;
-		}
-
-		//limit y magnitude to a max of maxForce
-		if(this.y_v < -this.maxforce){
-			this.y_v = -this.maxforce;
-		} else if(this.y_v > this.maxforce){
-			this.y_v = this.maxforce;
-		}
-
-		if(this.x_v > 0 || this.y_v > 0){
-			this.idle = false;
-		}
-
-        if(this.idle == false){ 
-            //If we have no velocity and no key inputs, set ourselves to idle. By checking for key input it allows us to keep playing movement animations at screen border to create cleaner gameplay
-            if(this.x_v == 0 && this.y_v == 0 && state['key_change'] == false){
-                this.set_idle_state();
-            }
-        }
-        return false;
-        
-    }
 
     set_idle_state(){
         this.idle = true;
@@ -131,8 +110,9 @@ class Boid{
 
     flock(boids){
         this.align(boids);
-        // this.cohesion(boids);
-        // this.separation(boids);
+        this.cohesion(boids);
+        this.separation(boids);
+		this.checkCollisions(boids)
     }
 
 	align(boids){
@@ -163,8 +143,11 @@ class Boid{
 			// Normalize and apply maxforce
 			let mag = Math.sqrt(steering_x * steering_x + steering_y * steering_y);
 			if (mag > this.maxforce) {
-				steering_x = (steering_x / mag) * this.maxforce;
-				steering_y = (steering_y / mag) * this.maxforce;
+				// normalize 			
+				steering_x /= mag;
+				steering_y /= mag;
+				steering_x *= this.maxforce;
+				steering_y *= this.maxforce;
 			}
 			
 			steering_x *= this.alignment_Scalar;
@@ -202,8 +185,11 @@ class Boid{
 			// Normalize and apply maxforce
 			let mag = Math.sqrt(steering_x * steering_x + steering_y * steering_y);
 			if (mag > this.maxforce) {
-				steering_x = (steering_x / mag) * this.maxforce;
-				steering_y = (steering_y / mag) * this.maxforce;
+				// normalize 			
+				steering_x /= mag;
+				steering_y /= mag;
+				steering_x *= this.maxforce;
+				steering_y *= this.maxforce;
 			}
 
 			steering_x *= this.cohesion_Scalar;
@@ -243,8 +229,11 @@ class Boid{
 			// Normalize and apply maxforce
 			let mag = Math.sqrt(steering_x * steering_x + steering_y * steering_y);
 			if (mag > this.maxforce) {
-				steering_x = (steering_x / mag) * this.maxforce;
-				steering_y = (steering_y / mag) * this.maxforce;
+				// normalize 			
+				steering_x /= mag;
+				steering_y /= mag;
+				steering_x *= this.maxforce;
+				steering_y *= this.maxforce;
 			}
 			
 			steering_x *= this.separation_Scalar;
@@ -261,6 +250,7 @@ class Boid{
        this.align(boids);
        this.cohesion(boids);
        this.separation(boids);
+       this.checkCollisions(flock);
     }
 	
 	show() {
@@ -272,15 +262,10 @@ class Boid{
             this.set_idle_state();
     } 
 
-    random_velo(){
-        var rand = Math.floor(Math.random() * 2);
-        // console.log(rand);
-        if(rand == 0){
-            return 10;
-        } else if (rand == 1){
-            return -10;
-        }
-    }
+	random_velo() {
+		// console.log("maxSpeed:", this.maxSpeed); 
+		return (Math.random() * 2 * this.maxSpeed) - this.maxSpeed;
+	}
 
     random_pos_x(){
         // var rand = Math.floor(Math.random() * (window.innerWidth - this.sprite_json[this.root_e][this.state][this.cur_frame]['w']));
@@ -322,126 +307,3 @@ class Boid{
         }
     }
 }
-
-// Archived:
-
-
-//    constructor(sprite_json, start_state){
-//        this.sprite_json = sprite_json;
-//        
-//        this.state = start_state;
-//        this.root_e = "TenderBud";
-//
-//        this.cur_frame = 0;
-//
-//        this.cur_bk_data = null;
-//
-//        this.x_v = this.random_velo();
-//        this.y_v = this.random_velo();
-//
-//        this.x_a = 0;
-//        this.y_a = 0;
-//
-//        this.idle = false;
-//
-//        this.count = 1;
-//
-//        this.x = this.random_pos_x();
-//        this.y = this.random_pos_y();
-//
-//        this.maxforce = 1.0;
-//        this.maxSpeed = 300;
-//		this.perception = 300;
-//
-//    }
-
-//    draw(state){
-//        var ctx = canvas.getContext('2d');
-//        //console.log(state['key_change']);
-//
-//        /*if(this.sprite_json[this.root_e][this.state][this.cur_frame]['img'] == null){
-//            console.log("loading");
-//            this.sprite_json[this.root_e][this.state][this.cur_frame]['img'] = new Image();
-//            this.sprite_json[this.root_e][this.state][this.cur_frame]['img'].src = 'Penguins/' + this.root_e + '/' + this.state + '/' + this.cur_frame + '.png';
-//        }*/
-//
-//        if( this.cur_bk_data != null){
-//            ctx.putImageData(this.cur_bk_data , (this.x - this.x_v) , (this.y - this.y_v));
-//        }
-//
-//        this.cur_bk_data = ctx.getImageData(this.x, this.y, 
-//            this.sprite_json[this.root_e][this.state][this.cur_frame]['w'], 
-//            this.sprite_json[this.root_e][this.state][this.cur_frame]['h']);
-//
-//            
-//        ctx.drawImage(this.sprite_json[this.root_e][this.state][this.cur_frame]['img'], this.x, this.y );
-//
-//        this.count += 1;
-//
-//        if(this.count % 3 == 0){
-//            this.cur_frame = this.cur_frame + 1;
-//            this.count = 1;
-//        }
-//            
-//
-//        if(this.cur_frame >= this.sprite_json[this.root_e][this.state].length){
-//            // console.log(this.cur_frame);
-//            this.cur_frame = 0;
-//        }
-//
-//		this.update_animation();
-//		
-//		//Screen border checks
-//		
-//		// Toroidal
-//
-//		if(this.x >= (window.innerWidth - this.sprite_json[this.root_e][this.state][this.cur_frame]['w']) ){//Right
-//			this.x = 1;
-//		}
-//		if(this.x <= 0){
-//			this.x = window.innerWidth - this.sprite_json[this.root_e][this.state][this.cur_frame]['w']-1;
-//		}
-//		if(this.y >= (window.innerHeight - this.sprite_json[this.root_e][this.state][this.cur_frame]['h']) ){ //Bottom
-//			this.y = 1;
-//		}
-//		if(this.y <= 0){
-//			this.y = window.innerHeight - this.sprite_json[this.root_e][this.state][this.cur_frame]['h']-1;
-//		}
-//		
-//		//If we're not idle, then we should be moving!
-//		this.x += this.x_v;
-//		this.y += this.y_v;
-//
-//		this.x_v += this.x_a;
-//		this.y_v += this.y_a;
-//
-//		this.x_a = 0;
-//		this.y_a = 0;
-//
-//		//limit x magnitude to a max of maxForce
-//		if(this.x_v < -this.maxforce){
-//			this.x_v = -this.maxforce;
-//		} else if(this.x_v > this.maxforce){
-//			this.x_v = this.maxforce;
-//		}
-//
-//		//limit y magnitude to a max of maxForce
-//		if(this.y_v < -this.maxforce){
-//			this.y_v = -this.maxforce;
-//		} else if(this.y_v > this.maxforce){
-//			this.y_v = this.maxforce;
-//		}
-//
-//		if(this.x_v > 0 || this.y_v > 0){
-//			this.idle = false;
-//		}
-//
-//        if(this.idle == false){ 
-//            //If we have no velocity and no key inputs, set ourselves to idle. By checking for key input it allows us to keep playing movement animations at screen border to create cleaner gameplay
-//            if(this.x_v == 0 && this.y_v == 0 && state['key_change'] == false){
-//                this.set_idle_state();
-//            }
-//        }
-//        return false;
-//        
-//    }
