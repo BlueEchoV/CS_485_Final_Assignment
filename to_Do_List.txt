@@ -1,0 +1,44 @@
+Game Design Document
+	Theme:
+		- Forest theme
+	Win condition:
+		- Player catches all the fire flys
+	Lose condition:
+		- Player gets killed by the enemies
+	Player: 
+		- Can throw rocks at enemies
+		- Unlimited rocks
+		- The player has one life
+	Enemies:
+		- Enemies spawn more frequently as the time goes on
+		- ALL ENEMIES ONE SHOT THE PLAYER
+		- Large enemies (Spider)
+		- Small enemies (Ants)
+		- Maybe a ranged enemy (Bee shooting stingers)
+	Fireflys
+		- The score system/win condition
+		- These are the boids in the background that the player can collect
+		
+TODO List:
+Michael P
+- Re-step through boids impelmentation and fix any bugs
+	- Try getting that working
+- Models
+	- Younger guy with leather cloths and a jar walking in both directions 
+	models over 3 frames
+- Images re not based off the screen size (have a scalar based off the screen size?
+- More levels (They just keep getting harder as you progress) (Next level just addes more enemies or whatever)
+- Upgrades?
+- Level image generates a random image when you press "Next Level"
+- Weapon upgrades automatically every round (+ 0.1 fire speed or something?)
+
+Michael B
+- Projectile coming out of the player (Rocks
+- Spawning enenmies towards the player
+
+Other Todos
+- Scoring system for the fireflies
+- Make penguin models smaller
+- Menu UI
+- Different levels
+- sound?
