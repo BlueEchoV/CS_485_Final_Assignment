@@ -1,11 +1,12 @@
-//Parent Sprit Classa
+
 class Sprite {
     constructor(sprite_json, x, y, start_state){
+        console.log("yo");
         this.sprite_json = sprite_json;
         this.x = x;
         this.y = y;
         this.state = start_state;
-        this.root_e = "TenderBud";
+        this.root_e = "player";
 
         this.cur_frame = 0;
 
@@ -14,22 +15,26 @@ class Sprite {
         this.x_v = 0;
         this.y_v = 0;
 
-        
+        this.set_v = 5;
 
         this.idle = false;
 
         this.count = 1;
+
+        this.points = 0;
     }
 
     draw(state){
         var ctx = canvas.getContext('2d');
         //console.log(state['key_change']);
-
+        
         /*if(this.sprite_json[this.root_e][this.state][this.cur_frame]['img'] == null){
             console.log("loading");
             this.sprite_json[this.root_e][this.state][this.cur_frame]['img'] = new Image();
             this.sprite_json[this.root_e][this.state][this.cur_frame]['img'].src = 'Penguins/' + this.root_e + '/' + this.state + '/' + this.cur_frame + '.png';
         }*/
+
+
 
         
         if( this.cur_bk_data != null){
@@ -46,14 +51,13 @@ class Sprite {
 
         this.count += 1;
 
-        if(this.count % 3 == 0){
+        if(this.count % 10 == 0){
             this.cur_frame = this.cur_frame + 1;
             this.count = 1;
         }
-            
 
         if(this.cur_frame >= this.sprite_json[this.root_e][this.state].length){
-            console.log(this.cur_frame);
+            //console.log(this.cur_frame);
             this.cur_frame = 0;
         }
 
@@ -64,6 +68,11 @@ class Sprite {
         } else { //If no key input, then we shouldn't be moving
             this.x_v = 0;
             this.y_v = 0;
+        }
+
+        if(state['key_press']["SPACE_BAR"] != null){
+            state['key_press']["SPACE_BAR"] = null;
+            this.fire_projectile(state);
         }
 
         if(this.idle == false){
@@ -100,6 +109,8 @@ class Sprite {
             }
         }
 
+        this.detect_collision(state['foreground_sprites']);
+
         
         
         
@@ -113,14 +124,25 @@ class Sprite {
         this.x_v = 0;
         this.y_v = 0;
         
-        const idle_state = ["idle","idleBackAndForth","idleBreathing","idleFall","idleLayDown","idleLookAround","idleLookDown","idleLookLeft","idleLookRight","idleLookUp","idleSit","idleSpin","idleWave"];
+        const idle_state = ["idle"];
 
         const random = Math.floor(Math.random() * idle_state.length);
         console.log(idle_state[random]);
-        this.state = idle_state[random];
+        this.state = "idle";
         this.cur_frame = 0;
-        
-        
+    }
+
+    fire_projectile(state){
+        var x = state["mouse_coords"]["x"];
+        var y = state["mouse_coords"]["y"];
+
+        var angle = Math.atan2(y - this.y, x-this.x);
+        var proj_x_v = Math.cos(angle);
+        var proj_y_v = Math.sin(angle);
+
+        state["foreground_sprites"].push( new projectile(state["rock_data"], "move", this.x,this.y, 5*proj_x_v, 5*proj_y_v) );
+
+        //console.log(angle + " " + proj_x_v + " " + proj_y_v);
     }
 
     bound_hit(side){
@@ -131,43 +153,51 @@ class Sprite {
             this.idle = false;
 
             if(key["UP"] != null){
-                this.y_v = -10;
+                this.y_v = -this.set_v;
             } else if (key["DOWN"] != null){
-                this.y_v = 10;
+                this.y_v = this.set_v;
             } else {
                 this.y_v = 0;
             }
 
             if(key["RIGHT"] != null){
-                this.x_v = 10;
+                this.x_v = this.set_v;
             } else if (key["LEFT"] != null) {
-                this.x_v = -10;
+                this.x_v = -this.set_v;
             } else {
                 this.x_v = 0;
             }
+    }
 
+    detect_collision(others){
+       for(var i = 0; i < others.length; i++){
             
-
+            
+            //Check if collided with any sprites
+            if( this.x <= (others[i].x + others[i].sprite_json[others[i].root_e][others[i].state][others[i].cur_frame]['w']) &&
+                (this.x + this.sprite_json[this.root_e][this.state][this.cur_frame]['w']) >= others[i].x && 
+                this.y <= (others[i].y + others[i].sprite_json[others[i].root_e][others[i].state][others[i].cur_frame]['h']) && 
+                (this.y + this.sprite_json[this.root_e][this.state][this.cur_frame]['h']) >= others[i].y){
+                    
+                    //If collided with enemy spider
+                    if(others[i].enemy){
+                        console.log("you died LOL");
+                    }
+                    if(others[i].constructor.name == "Boid"){
+                        others.splice(i, 1);
+                        console.log("yo");
+                    }
+                   
+            }
+        }
     }
 
     update_animation(){
         //Change animation correlated to the direction we're moving
-        if(this.x_v > 0 && this.y_v < 0){
-            this.state = "walk_NE";
-        } else if (this.x_v < 0 && this.y_v < 0){
-            this.state = "walk_NW";
-        } else if (this.x_v < 0 && this.y_v > 0){
-             this.state = "walk_SW";
-        } else if (this.x_v > 0 && this.y_v > 0){
-            this.state = "walk_SE";
-        } else if(this.x_v > 0 && this.y_v == 0){
+        if(this.x_v > 0){
             this.state = "walk_E";
-        }else if(this.x_v < 0 && this.y_v == 0){
+        }else if(this.x_v < 0){
             this.state = "walk_W";
-        }else if(this.y_v > 0 && this.x_v == 0){
-            this.state = "walk_S";
-        }else if(this.y_v < 0 && this.x_v == 0){
-            this.state = "walk_N";
         }
 
         //Check if our new animation will put us out of bounds, and if so set current frame to 0

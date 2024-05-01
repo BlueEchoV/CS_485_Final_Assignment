@@ -4,12 +4,14 @@
 <script src="https://code.jquery.com/jquery-3.7.1.js" integrity="sha256-eKhayi8LEQwp4NKxN+CfCh+3qOVUtJn3QNZ0TciWLP4=" crossorigin="anonymous"></script>
 
 <script src="js/sprite.js"></script>
+<script src="js/spider.js"></script>
 <script src="js/boid.js"></script>
+<script src="js/projectile.js"></script>
 
 
 </head>
 <body style="">
-<canvas id='mycanvas' style="">
+<canvas id='mycanvas' style="" onmousemove="coordinate(event)">
 </canvas>
 
 
@@ -18,14 +20,29 @@
     const sprites_to_draw = new Array(2); 
     var draw_loop_timeout;
     var img = new Image();
-
+    var firefly_Img = new Image();
+    /*
     const up_arrow = 38;
     const down_arrow = 40;
     const left_arrow = 37;
     const right_arrow = 39;
+    */
+    const up_arrow = 87;
+    const down_arrow = 83;
+    const left_arrow = 65;
+    const right_arrow = 68;
+    const space_bar = 32;
 
-    const states = ["idle","idleBackAndForth","idleBreathing","idleFall","idleLayDown","idleLookAround","idleLookDown","idleLookLeft",
-    "idleLookRight","idleLookUp","idleSit","idleSpin","idleWave","walk_E","walk_N","walk_NE","walk_NW","walk_S","walk_SE","walk_SW","walk_W"];
+    var mouse_x;
+    var mouse_y;
+
+    //const penguin_states = ["idle","idleBackAndForth","idleBreathing","idleFall","idleLayDown","idleLookAround","idleLookDown","idleLookLeft",
+    //"idleLookRight","idleLookUp","idleSit","idleSpin","idleWave","walk_E","walk_N","walk_NE","walk_NW","walk_S","walk_SE","walk_SW","walk_W"];
+    const player_states = ["idle","walk_E","walk_W"];
+    const firefly_states = ["idle"];
+    const spider_states = ["idle"];
+    const rock_states = ["move"];
+    
 
     var key_change = false;
     var key_num = [];
@@ -33,47 +50,85 @@
     var key_press = { 'UP' : null,
                     'RIGHT' : null,
                     'LEFT' : null,
-                    'DOWN' : null
+                    'DOWN' : null,
+                    'SPACE_BAR' : null
                                 }
+
+    
+
+    //for spacebar
+    var pressed = false;
+
+    //
+    var rock_data = null;
     
     sprites_to_draw[0] = new Array(0); //background and 
     sprites_to_draw[1] = new Array(0); //forground
 
-    $.getJSON( "Penguins/animationData.json", function( data ) {
-        //sprites_to_draw[1].push( new Sprite(data, 0 ,0, "idleSpin") );
-        //sprites_to_draw[1].push( new Sprite(data, 100 ,100, "idleWave") );
 
-        //setTimeout(() => {
-                for(var i = 0;i< states.length;i++){
-                    for(var j = 0; j < data["TenderBud"][states[i]].length; j++){
-                        console.log("loading");
-                        data["TenderBud"][states[i]][j]['img'] = new Image();
-                        data["TenderBud"][states[i]][j]['img'].src = 'Penguins/TenderBud/' + states[i] + '/' + j + '.png';
+    //Preload Player
+    $.getJSON( "assets/player_Imgs/animationData.json", function( data ) {
+            
+                for(var i = 0;i< player_states.length;i++){
+                    for(var j = 0; j < data["player"][player_states[i]].length; j++){
+                        console.log("loading player data");
+                        data["player"][player_states[i]][j]['img'] = new Image();
+                        data["player"][player_states[i]][j]['img'].src = 'assets/player_Imgs/' + player_states[i] + '/' + j + '.png';
                     }
                 }
-            //}, "500");
+        sprites_to_draw[1].push( new Sprite(data, 150 ,600, "idle") );
+    });
 
-        
-        for(var i = 0; i < 10;i++){
-            sprites_to_draw[1].push( new boid(data, "idleSpin") );
+    //Preload Spider
+    $.getJSON( "assets/spider_imgs/animationData.json", function( data ) {
+            
+                for(var i = 0;i< spider_states.length;i++){
+                    for(var j = 0; j < data["spider"][spider_states[i]].length; j++){
+                        console.log("loading spider data");
+                        data["spider"][spider_states[i]][j]['img'] = new Image();
+                        data["spider"][spider_states[i]][j]['img'].src = 'assets/spider_imgs/' + spider_states[i] + '/' + j + '.png';
+                    }
+                }
+        sprites_to_draw[1].push( new spider(data, "idle") );
+    });
+
+    //Preload firefly
+    $.getJSON( "assets/firefly_imgs/animationData.json", function( data ) {
+        for(var i = 0;i< firefly_states.length;i++){
+                    for(var j = 0; j < data["firefly"][firefly_states[i]].length; j++){
+                        console.log("loading firefly data");
+                        data["firefly"][firefly_states[i]][j]['img'] = new Image();
+                        data["firefly"][firefly_states[i]][j]['img'].src = 'assets/firefly_imgs/' + firefly_states[i] + '/' + j + '.png';
+                    }
         }
-        
-        sprites_to_draw[1].push( new Sprite(data, 150 ,600, "idleSpin") );
+        for(var i = 0; i < 100;i++){
+            sprites_to_draw[1].push( new Boid(data, "idle") );
+        }
         
     });
 
+    //Preload rock
+    $.getJSON( "assets/rock_imgs/animationData.json", function( data ) {
+        for(var i = 0;i< rock_states.length;i++){
+                    for(var j = 0; j < data["rock"][rock_states[i]].length; j++){
+                        console.log("loading rock data");
+                        data["rock"][rock_states[i]][j]['img'] = new Image();
+                        data["rock"][rock_states[i]][j]['img'].src = 'assets/rock_imgs/' + rock_states[i] + '/' + j + '.png';
+                    }
+        }
+        rock_data = data;
+    });
 
     $( document ).ready(function() {
         
         console.log( "Page is now ready" );
         resize();
-
         img.onload = function() {
             var ctx = canvas.getContext('2d');
             ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
         };
-        img.src = 'imgs/bk.jpg';
-        //draw_loop_timeout = setInterval(draw_loop, 33);
+
+        img.src = 'imgs/bk_2.jpg';
 
         setTimeout(() => {
             requestAnimationFrame(draw_loop);
@@ -119,9 +174,16 @@
                 key_change = true;
                 key_press["DOWN"] = e.keyCode;
             }
+            if(e.keyCode == space_bar){
+                if(!pressed)
+                    key_press["SPACE_BAR"] = e.keyCode;
+                pressed = true;
+            }
+            
         
         };
         document.body.onkeyup = function(e){
+            //alert(e.keyCode);
             
             if(key_press["UP"] == e.keyCode){
                 key_press["UP"] = null;
@@ -136,23 +198,42 @@
                 key_press["DOWN"] = null;
             }
 
+            if(e.keyCode == space_bar){
+                key_press["SPACE_BAR"] = null;
+                pressed = false;
+            }
+            
+            
+            
+
             if(key_press["UP"] == null && key_press["RIGHT"] == null && key_press["LEFT"] == null && key_press["DOWN"] == null){
                 key_change = false;
             }
             
         };
-
+        var ctx = canvas.getContext('2d');
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
         
         //Draw forground sprites
-        for(var i = 0; i < forground_length; i++){
-            sprites_to_draw[1][i].draw( { 'has_background_changed' : has_background_changed,
+        for(var sprites of sprites_to_draw[1]){
+            
+
+            if (typeof sprites.flock === "function") { 
+                sprites.edges(canvas.width,canvas.height);
+                sprites.draw({ 'foreground_sprites' : sprites_to_draw[1]
+                                        });
+                sprites.flock(sprites_to_draw[1]);
+                
+            } else {
+                sprites.draw( { 'has_background_changed' : has_background_changed,
                                           'key_change' : key_change,
-                                          'key_press' : key_press
+                                          'key_press' : key_press,
+                                          'foreground_sprites' : sprites_to_draw[1],
+                                          'mouse_coords' : {'x' : mouse_x, 'y' : mouse_y},
+                                          'rock_data' : rock_data
                                         }
             );
-
-            if (typeof sprites_to_draw[1][i].flock === "function") { 
-                sprites_to_draw[1][i].flock(sprites_to_draw[1]);
             }
         }
         
@@ -170,6 +251,11 @@
             ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
         }catch(err){
         }*/
+    }
+
+    function coordinate(event) {
+        mouse_x = event.clientX;
+        mouse_y = event.clientY;
     }
 </script>
 
