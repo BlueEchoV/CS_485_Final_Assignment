@@ -1,12 +1,15 @@
 class Boid{
-	constructor(image){
+	constructor(sprite_json,start_state){
 		console.log("Inside constructor");
-        
-        this.root_e = "TenderBud";
+        this.sprite_json = sprite_json;
+
+        this.root_e = "firefly";
 
         this.cur_frame = 0;
 
         this.idle = false;
+
+		this.state = start_state;
 
         this.count = 1;
 
@@ -30,9 +33,6 @@ class Boid{
 		// Separation: Drives a boid to move away from 
 		// flockmates that are too close, preventing overcrowding.
 		this.separation_Scalar = 1.0;
-		
-		// Image
-		this.img = image;
 		
 		// Random position
         this.x = this.random_pos_x();
@@ -58,11 +58,11 @@ class Boid{
 	
 	checkCollisions(boids) {
         for (let other of boids) {
-            if (other !== this) {
+            if (other !== this && other.constructor.name == "Boid") {
                 let dx = this.x - other.x;
                 let dy = this.y - other.y;
                 let distance = Math.sqrt(dx * dx + dy * dy);
-                let minDistance = this.img.width / 2 + this.img.width / 2;
+                let minDistance = this.sprite_json[this.root_e][this.state][this.cur_frame]['w'] / 2 + this.sprite_json[this.root_e][this.state][this.cur_frame]['w'] / 2;
 
                 if (distance < minDistance) {
                     // Simple response: move away from the collision point
@@ -78,7 +78,7 @@ class Boid{
             }
         }
     }
-	
+	/*
 	update() {
 		// Update velocity
 		this.x_v += this.acceleration_X;
@@ -98,7 +98,70 @@ class Boid{
 		// Reset acceleration to 0 after each update
 		this.acceleration_X = 0;
 		this.acceleration_Y = 0;
-	}
+	}*/
+	draw(state){
+        var ctx = canvas.getContext('2d');
+        //console.log(state['key_change']);
+
+        /*if(this.sprite_json[this.root_e][this.state][this.cur_frame]['img'] == null){
+            console.log("loading");
+            this.sprite_json[this.root_e][this.state][this.cur_frame]['img'] = new Image();
+            this.sprite_json[this.root_e][this.state][this.cur_frame]['img'].src = 'Penguins/' + this.root_e + '/' + this.state + '/' + this.cur_frame + '.png';
+        }*/
+
+        if( this.cur_bk_data != null){
+            ctx.putImageData(this.cur_bk_data , (this.x - this.x_v) , (this.y - this.y_v));
+        }
+
+        this.cur_bk_data = ctx.getImageData(this.x, this.y, 
+            this.sprite_json[this.root_e][this.state][this.cur_frame]['w'], 
+            this.sprite_json[this.root_e][this.state][this.cur_frame]['h']);
+
+            
+        ctx.drawImage(this.sprite_json[this.root_e][this.state][this.cur_frame]['img'], this.x, this.y );
+
+        this.count += 1;
+
+        if(this.count % 3 == 0){
+            this.cur_frame = this.cur_frame + 1;
+            this.count = 1;
+        }
+            
+
+        if(this.cur_frame >= this.sprite_json[this.root_e][this.state].length){
+            //console.log(this.cur_frame);
+            this.cur_frame = 0;
+        }
+            
+        // Update velocity
+		this.x_v += this.acceleration_X;
+		this.y_v += this.acceleration_Y;
+
+		// Clamp the velocity to maxSpeed
+		let speed = Math.sqrt(this.x_v * this.x_v + this.y_v * this.y_v);
+		if (speed > this.maxSpeed) {
+			this.x_v = (this.x_v / speed) * this.maxSpeed;
+			this.y_v = (this.y_v / speed) * this.maxSpeed;
+		}
+
+		// Update position
+		this.x += this.x_v;
+		this.y += this.y_v;
+
+		// Reset acceleration to 0 after each update
+		this.acceleration_X = 0;
+		this.acceleration_Y = 0;
+
+            
+
+        this.update_animation();
+        
+        
+
+        return false;
+        
+    }
+
 
     set_idle_state(){
         this.idle = true;
@@ -117,7 +180,7 @@ class Boid{
         this.align(boids);
         this.cohesion(boids);
         this.separation(boids);
-		this.checkCollisions(boids)
+		this.checkCollisions(boids);
     }
 
 	align(boids){
@@ -127,14 +190,17 @@ class Boid{
 		let steering_y = 0;
 
 		for(let other of boids){
-			let a = this.x - other.x;
-			let b = this.y - other.y;
-			let d = Math.sqrt(a*a + b*b);
+			if(other.constructor.name == "Boid"){
+				let a = this.x - other.x;
+				let b = this.y - other.y;
+				let d = Math.sqrt(a*a + b*b);
 
-			if(other !== this && d < perceptionRadius){
-				steering_x += other.x_v;
-				steering_y += other.y_v;
-				total++;
+				if(other !== this && d < perceptionRadius){
+					steering_x += other.x_v;
+					steering_y += other.y_v;
+					total++;
+			}
+			
 			}
 		}
 		if(total > 0){
@@ -171,15 +237,17 @@ class Boid{
 
 		let total = 0;
 		for(let other of boids){
-			let a = this.x - other.x;
-			let b = this.y - other.y;
-			let d = Math.sqrt(a * a + b * b);
+			if(other.constructor.name == "Boid"){
+				let a = this.x - other.x;
+				let b = this.y - other.y;
+				let d = Math.sqrt(a * a + b * b);
 
-			if(other !== this && d < perceptionRadius){
-				steering_x += other.x;
-				steering_y += other.y;
-				total++;
-			}
+				if(other !== this && d < perceptionRadius){
+					steering_x += other.x;
+					steering_y += other.y;
+					total++;
+				}
+			}	
 		}
 		if(total > 0){
 			steering_x /= total;
@@ -213,18 +281,20 @@ class Boid{
 		let steering_y = 0;
 
 		for(let other of boids){
-			let a = this.x - other.x;
-			let b = this.y - other.y;
-			let d = Math.sqrt(a * a + b * b);
+			if(other.constructor.name == "Boid"){
+				let a = this.x - other.x;
+				let b = this.y - other.y;
+				let d = Math.sqrt(a * a + b * b);
 
-			if(other !== this && d < perceptionRadius && d > 0){ // Ensuring d is positive to avoid division by zero
-				let diff_x = this.x - other.x;
-				let diff_y = this.y - other.y;
-				diff_x /= d; // Normalize the difference
-				diff_y /= d;
-				steering_x += diff_x;
-				steering_y += diff_y;
-				total++;
+				if(other !== this && d < perceptionRadius && d > 0){ // Ensuring d is positive to avoid division by zero
+					let diff_x = this.x - other.x;
+					let diff_y = this.y - other.y;
+					diff_x /= d; // Normalize the difference
+					diff_y /= d;
+					steering_x += diff_x;
+					steering_y += diff_y;
+					total++;
+				}
 			}
 		}
 		if(total > 0){
@@ -251,17 +321,12 @@ class Boid{
 	}
 
 	
-    flock(boids){
-       this.align(boids);
-       this.cohesion(boids);
-       this.separation(boids);
-       this.checkCollisions(flock);
-    }
-	
+
+	/*
 	show() {
 		var ctx = canvas.getContext('2d');
 		ctx.drawImage(this.img, this.x, this.y );
-	}
+	}*/
 
     bound_hit(side){
             this.set_idle_state();
@@ -288,6 +353,7 @@ class Boid{
 
     update_animation(){
         //Change animation correlated to the direction we're moving
+		/*
         if(this.x_v > 0 && this.y_v < 0){
             this.state = "walk_NE";
         } else if (this.x_v < 0 && this.y_v < 0){
@@ -304,7 +370,7 @@ class Boid{
             this.state = "walk_S";
         }else if(this.y_v < 0 && this.x_v == 0){
             this.state = "walk_N";
-        }
+        }*/
 
         //Check if our new animation will put us out of bounds, and if so set current frame to 0
         if(this.cur_frame >= this.sprite_json[this.root_e][this.state].length){
