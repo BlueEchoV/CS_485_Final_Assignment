@@ -1,73 +1,134 @@
 <!DOCTYPE html>
 <html>
 <head>
-	<script src="https://code.jquery.com/jquery-3.7.1.js" integrity="sha256-eKhayi8LEQwp4NKxN+CfCh+3qOVUtJn3QNZ0TciWLP4=" crossorigin="anonymous"></script>
-	<script src="js/sprite.js"></script>
-	<script src="js/boid.js"></script>
+<script src="https://code.jquery.com/jquery-3.7.1.js" integrity="sha256-eKhayi8LEQwp4NKxN+CfCh+3qOVUtJn3QNZ0TciWLP4=" crossorigin="anonymous"></script>
+
+<script src="js/sprite.js"></script>
+<script src="js/spider.js"></script>
+<script src="js/boid.js"></script>
+<script src="js/projectile.js"></script>
+
+
 </head>
 <body style="">
-	<canvas id='mycanvas' style=""></canvas>
-	<script>
+<canvas id='mycanvas' style="" onmousemove="coordinate(event)">
+</canvas>
+
+
+<script>
     const canvas = document.querySelector("canvas");
     const sprites_to_draw = new Array(2); 
     var draw_loop_timeout;
-    var bkg_Img = new Image();
-	var firefly_Img = new Image();
+    var img = new Image();
+    var firefly_Img = new Image();
+    /*
+    const up_arrow = 38;
+    const down_arrow = 40;
+    const left_arrow = 37;
+    const right_arrow = 39;
+    */
+    const up_arrow = 87;
+    const down_arrow = 83;
+    const left_arrow = 65;
+    const right_arrow = 68;
+    const space_bar = 32;
 
-    const states = ["idle","idleBackAndForth","idleBreathing","idleFall","idleLayDown","idleLookAround","idleLookDown","idleLookLeft",
-    "idleLookRight","idleLookUp","idleSit","idleSpin","idleWave","walk_E","walk_N","walk_NE","walk_NW","walk_S","walk_SE","walk_SW","walk_W"];
+    var mouse_x;
+    var mouse_y;
+
+    //const penguin_states = ["idle","idleBackAndForth","idleBreathing","idleFall","idleLayDown","idleLookAround","idleLookDown","idleLookLeft",
+    //"idleLookRight","idleLookUp","idleSit","idleSpin","idleWave","walk_E","walk_N","walk_NE","walk_NW","walk_S","walk_SE","walk_SW","walk_W"];
+    const player_states = ["idle","walk_E","walk_W"];
+    const firefly_states = ["idle"];
+    const spider_states = ["walk_E","walk_W"];
+    const rock_states = ["move"];
+    
 
     var key_change = false;
     var key_num = [];
 
-    var key_press = { 
-							'UP' : null,
-							'RIGHT' : null,
-							'LEFT' : null,
-							'DOWN' : null
-							}
+    var key_press = { 'UP' : null,
+                    'RIGHT' : null,
+                    'LEFT' : null,
+                    'DOWN' : null,
+                    'SPACE_BAR' : null
+                                }
+
+    
+
+    //for spacebar
+    var pressed = false;
+
+    //
+    var rock_data = null;
     
     sprites_to_draw[0] = new Array(0); //background and 
     sprites_to_draw[1] = new Array(0); //forground
-	const flock = [];
 
-	var player_Img = new Image();
-    $.getJSON( "Penguins/animationData.json", function( data ) {
-		//for(var i = 0;i< states.length;i++){
-		//	for(var j = 0; j < data["TenderBud"][states[i]].length; j++){
-		//		console.log("loading");
-		//		data["TenderBud"][states[i]][j]['img'] = new Image();
-		//		data["TenderBud"][states[i]][j]['img'].src = 'Penguins/TenderBud/' + states[i] + '/' + j + '.png';
-		//	}
-		//}
-		player_Img.src = "spider_2.png";
-		// player_Img.src = "player_Imgs/idle/0.png";
-        firefly_Img.src = 'firefly.png';
-        // firefly_Img.src = 'ant.png';
-        // firefly_Img.src = 'spider.png';
-        // firefly_Img.src = 'spider_1.png';
-		
-        // for(var i = 0; i < 10;i++){
-        //     sprites_to_draw[1].push( new boid(firefly_Img) );
-        // }
+
+    //Preload Player
+    $.getJSON( "assets/player_imgs/animationData.json", function( data ) {
+            
+                for(var i = 0;i< player_states.length;i++){
+                    for(var j = 0; j < data["player"][player_states[i]].length; j++){
+                        console.log("loading player data");
+                        data["player"][player_states[i]][j]['img'] = new Image();
+                        data["player"][player_states[i]][j]['img'].src = 'assets/player_imgs/' + player_states[i] + '/' + j + '.png';
+                    }
+                }
+        sprites_to_draw[1].push( new Sprite(data, 150 ,600, "idle") );
+    });
+
+    //Preload Spider
+    $.getJSON( "assets/enemy_spider_imgs/animationData.json", function( data ) {
+            
+                for(var i = 0;i< spider_states.length;i++){
+                    for(var j = 0; j < data["spider"][spider_states[i]].length; j++){
+                        console.log("loading spider data");
+                        data["spider"][spider_states[i]][j]['img'] = new Image();
+                        data["spider"][spider_states[i]][j]['img'].src = 'assets/enemy_spider_imgs/' + spider_states[i] + '/' + j + '.png';
+                    }
+                }
+        sprites_to_draw[1].push( new spider(data, "walk_E") );
+    });
+
+    //Preload firefly
+    $.getJSON( "assets/firefly_imgs/animationData.json", function( data ) {
+        for(var i = 0;i< firefly_states.length;i++){
+                    for(var j = 0; j < data["firefly"][firefly_states[i]].length; j++){
+                        console.log("loading firefly data");
+                        data["firefly"][firefly_states[i]][j]['img'] = new Image();
+                        data["firefly"][firefly_states[i]][j]['img'].src = 'assets/firefly_imgs/' + firefly_states[i] + '/' + j + '.png';
+                    }
+        }
+        for(var i = 0; i < 100;i++){
+            sprites_to_draw[1].push( new Boid(data, "idle") );
+        }
+        
+    });
+
+    //Preload rock
+    $.getJSON( "assets/rock_imgs/animationData.json", function( data ) {
+        for(var i = 0;i< rock_states.length;i++){
+                    for(var j = 0; j < data["rock"][rock_states[i]].length; j++){
+                        console.log("loading rock data");
+                        data["rock"][rock_states[i]][j]['img'] = new Image();
+                        data["rock"][rock_states[i]][j]['img'].src = 'assets/rock_imgs/' + rock_states[i] + '/' + j + '.png';
+                    }
+        }
+        rock_data = data;
     });
 
     $( document ).ready(function() {
-		console.log( "Page is now ready" );
-		for (let i = 0; i < 50; i++) {
-			flock.push(new Boid(firefly_Img));
-		}
-		sprites_to_draw[1].push( new Sprite(player_Img) );
-		
+        
+        console.log( "Page is now ready" );
         resize();
-
-        bkg_Img.onload = function() {
+        img.onload = function() {
             var ctx = canvas.getContext('2d');
-            ctx.drawImage(bkg_Img, 0, 0, canvas.width, canvas.height);
+            ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
         };
-        // bkg_Img.src = 'imgs/bk.jpg';
-        bkg_Img.src = 'imgs/bk_2.jpg';
-        // bkg_Img.src = 'imgs/bk_3.jpg';
+
+        img.src = 'assets/bkg_imgs/bk_1.jpg';
 
         setTimeout(() => {
             requestAnimationFrame(draw_loop);
@@ -76,170 +137,128 @@
 
     window.addEventListener('resize', resize);
 
-	function draw_Boids(flock) {
-		for (let boid of flock) {
-			boid.edges(canvas.width, canvas.height);
-			boid.flock(flock);
-			boid.update();
-			boid.show();
-		}
-	}
-
     function draw_loop(){
+        
         var background_length = sprites_to_draw[0].length;
         var forground_length  = sprites_to_draw[1].length;
         var has_background_changed = false;
+        
+        
 
         const context = canvas.getContext('2d');
-        context.clearRect(0, 0, canvas.width, canvas.height);
+        //context.clearRect(0, 0, canvas.width, canvas.height);
 
-		context.drawImage(bkg_Img, 0, 0, canvas.width, canvas.height);
         //Draw background sprites
         for(var i = 0; i < background_length; i++){
             has_background_changed = sprites_to_draw[0][i].draw();
         }
 
-		handle_input();
+        
 
-        // Draw forground sprites
-		// Loop through the whole array
-        for(var i = 0; i < forground_length; i++){
-			// Check if it's a function so we know it's a boid
-            //if (typeof sprites_to_draw[1][i].flock === "function") { 
-            //    sprites_to_draw[1][i].flock(sprites_to_draw[1]);
-            //}
-			// Each sprite has a draw method
-			// 
-            sprites_to_draw[1][i].draw();
+        document.body.onkeydown = function(e){
+            
+            if(e.keyCode == up_arrow){
+                key_change = true;
+                key_press["UP"] = e.keyCode;
+            } 
+            if(e.keyCode == right_arrow){
+                //alert(String.fromCharCode(e.keyCode)+" --> "+e.keyCode);
+                key_change = true;
+                key_press["RIGHT"] = e.keyCode;
+            }
+            if(e.keyCode == left_arrow){
+                key_change = true;
+                key_press["LEFT"] = e.keyCode;
+            }
+            if(e.keyCode == down_arrow){
+                key_change = true;
+                key_press["DOWN"] = e.keyCode;
+            }
+            if(e.keyCode == space_bar){
+                if(!pressed)
+                    key_press["SPACE_BAR"] = e.keyCode;
+                pressed = true;
+            }
+            
+        
+        };
+        document.body.onkeyup = function(e){
+            //alert(e.keyCode);
+            
+            if(key_press["UP"] == e.keyCode){
+                key_press["UP"] = null;
+            }
+            if(key_press["RIGHT"] == e.keyCode){
+                key_press["RIGHT"] = null;
+            }
+            if(key_press["LEFT"] == e.keyCode){
+                key_press["LEFT"] = null;
+            }
+            if(key_press["DOWN"] == e.keyCode){
+                key_press["DOWN"] = null;
+            }
+
+            if(e.keyCode == space_bar){
+                key_press["SPACE_BAR"] = null;
+                pressed = false;
+            }
+            
+            
+            
+
+            if(key_press["UP"] == null && key_press["RIGHT"] == null && key_press["LEFT"] == null && key_press["DOWN"] == null){
+                key_change = false;
+            }
+            
+        };
+        var ctx = canvas.getContext('2d');
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+        
+        //Draw forground sprites
+        for(var sprites of sprites_to_draw[1]){
+            
+
+            if (typeof sprites.flock === "function") { 
+                sprites.edges(canvas.width,canvas.height);
+                sprites.draw({ 'foreground_sprites' : sprites_to_draw[1]
+                                        });
+                sprites.flock(sprites_to_draw[1]);
+                
+            } else {
+                sprites.draw( { 'has_background_changed' : has_background_changed,
+                                          'key_change' : key_change,
+                                          'key_press' : key_press,
+                                          'foreground_sprites' : sprites_to_draw[1],
+                                          'mouse_coords' : {'x' : mouse_x, 'y' : mouse_y},
+                                          'rock_data' : rock_data
+                                        }
+            );
+            }
         }
         
-		draw_Boids(flock);
-		
         requestAnimationFrame(draw_loop);
     }
-	
-	const up_arrow = 38;
-	const down_arrow = 40;
-	const left_arrow = 37;
-	const right_arrow = 39;
 
-	var x_velocity = 0;
-	var y_velocity = 0;
-	var speed = 2;
-	
-	var up_pressed = false;
-	var down_pressed = false;
-	var left_pressed = false;
-	var right_pressed = false;
-	
-	function handle_input() { 
-		x_velocity = 0;
-		y_velocity = 0;
-		
-		// north
-		if (up_pressed && !down_pressed && !left_pressed && !right_pressed) {
-			y_velocity = -speed;
-			// States for when I capture my player's new animations
-			current_state = 'walk_N';
-		} 
-		// south 
-		if (down_pressed && !up_pressed && !left_pressed && !right_pressed) { 
-			y_velocity = speed;
-			current_state = 'walk_S';
-		}
-		// west
-		if (left_pressed && !down_pressed && !up_pressed && !right_pressed) { 
-			x_velocity = -speed;
-			current_state = 'walk_W';
-		} 
-		// east 
-		if (right_pressed && !down_pressed && !left_pressed && !up_pressed) { 
-			x_velocity = speed;
-			current_state = 'walk_E';
-		}
-		// north east 
-		if (up_pressed && right_pressed) {
-			y_velocity = -speed;
-			x_velocity = speed;
-			current_state = 'walk_NE';
-		}
-		// south east 
-		if (down_pressed && right_pressed) {
-			y_velocity = speed;
-			x_velocity = speed;
-			current_state = 'walk_SE';
-		}
-		// sorth west 
-		if (left_pressed && down_pressed) {
-			y_velocity = speed;
-			x_velocity = -speed;
-			current_state = 'walk_SW';
-		}
-		// north west
-		if (up_pressed && left_pressed) {
-			y_velocity = -speed;
-			x_velocity = -speed;
-			current_state = 'walk_NW';
-		}
-		
-		// no presses
-		if (!up_pressed && !down_pressed && !left_pressed && !right_pressed) {
-			// sprites_to_draw[1][0].set_state('idle');
-			current_state = 'idle';
-		}
-		
-		// console.log(sprites_to_draw[1][0]);
-		sprites_to_draw[1][0].set_x_v(x_velocity);
-		sprites_to_draw[1][0].set_y_v(y_velocity);
-	}
-		// Player input key down 
-	document.body.onkeydown = function(e){
-		// Stop the page from scrolling when the arrow keys are pressed
-		if (e.keyCode == 37 || e.keyCode == 38 || e.keyCode == 39 || e.keyCode == 40) {
-			e.preventDefault();
-		}
-		if (e.keyCode == up_arrow) {
-			up_pressed = true;
-		}
-		if (e.keyCode == down_arrow) {
-			down_pressed = true;
-		}
-		if (e.keyCode == left_arrow) {
-			left_pressed = true;
-		}
-		if (e.keyCode == right_arrow) {
-			right_pressed = true;
-		}
-		// alert(String.fromCharCode(e.keyCode)+" --> "+e.keyCode);
-	}
-	
-	// Player input key up	
-	document.body.onkeyup = function(e){
-		// Stop the page from scrolling when the arrow keys are pressed
-		if (e.keyCode == 37 || e.keyCode == 38 || e.keyCode == 39 || e.keyCode == 40) {
-			e.preventDefault();
-		}
-		if (e.keyCode == up_arrow) {
-			up_pressed = false;
-		}
-		if (e.keyCode == down_arrow) {
-			down_pressed = false;
-		}
-		if (e.keyCode == left_arrow) {
-			left_pressed = false;
-		}
-		if (e.keyCode == right_arrow) {
-			right_pressed = false;
-		}
-		// alert(String.fromCharCode(e.keyCode)+" --> "+e.keyCode);
-	}
+    
 
     function resize(){
         canvas.width = window.innerWidth;
         canvas.height = window.innerHeight;
+        /*
+        try{
+            var ctx = canvas.getContext('2d');
+            ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+        }catch(err){
+        }*/
     }
 
-	</script>
+    function coordinate(event) {
+        mouse_x = event.clientX;
+        mouse_y = event.clientY;
+    }
+</script>
+
 </body>
 </html>
 
