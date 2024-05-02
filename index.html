@@ -7,6 +7,7 @@
 <script src="js/spider.js"></script>
 <script src="js/boid.js"></script>
 <script src="js/projectile.js"></script>
+<script src="js/boss.js"></script>
 
 
 </head>
@@ -41,6 +42,7 @@
     const player_states = ["idle","walk_E","walk_W"];
     const firefly_states = ["idle"];
     const spider_states = ["walk_E","walk_W"];
+    const boss_states = ["walk_E","walk_W"];
     const rock_states = ["move"];
     
 
@@ -91,6 +93,19 @@
                 }
         sprites_to_draw[1].push( new spider(data, "walk_E") );
     });
+
+    //Preload Boss
+    $.getJSON( "assets/enemy_boss_imgs/animationData.json", function( data ) {
+            
+            for(var i = 0;i< boss_states.length;i++){
+                for(var j = 0; j < data["boss"][boss_states[i]].length; j++){
+                    console.log("loading spider data");
+                    data["boss"][boss_states[i]][j]['img'] = new Image();
+                    data["boss"][boss_states[i]][j]['img'].src = 'assets/enemy_boss_imgs/' + boss_states[i] + '/' + j + '.png';
+                }
+            }
+    sprites_to_draw[1].push( new Boss(data, "walk_E") );
+});
 
     //Preload firefly
     $.getJSON( "assets/firefly_imgs/animationData.json", function( data ) {
