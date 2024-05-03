@@ -20,25 +20,45 @@ Game Design Document
 		- These are the boids in the background that the player can collect
 		
 TODO List:
-Michael P
-- Re-step through boids impelmentation and fix any bugs
-	- Try getting that working
-- Models
-	- Younger guy with leather cloths and a jar walking in both directions 
-	models over 3 frames
-- Images re not based off the screen size (have a scalar based off the screen size?
-- More levels (They just keep getting harder as you progress) (Next level just addes more enemies or whatever)
-- Upgrades?
-- Level image generates a random image when you press "Next Level"
-- Weapon upgrades automatically every round (+ 0.1 fire speed or something?)
+	Michael P
+		- Create more background sprites
+		- BUG: Overlapping images
+		- BUG: Have the spider / lady bug spawn at the edge of the map
+		- BUG: Don't let the enemies overlap with the player 
+		- Rock exploding on hit 
+		- Finish moving animations
+		- Death animations for ants, spider, ladybug
+			- When enemies die, play it
+		- Get ants spawning (Outside of map bounds)
+			- Spawning enemies towards the player
+			- Black box behind the fireflies
+		- Ammo system (Like in my game)
+		- Menu System
+		- Insta death
+			- Reset game states
 
-Michael B
-- Projectile coming out of the player (Rocks
-- Spawning enenmies towards the player
+	Michael B
+		- Remove black margin
+		- Level logic
+			- Level image generates a random image when you press "Next Level"
+			- Mulipliers (In the classes)
+				Player
+					(Maybe)
+						- Button: Firerate +10%
+						- Button: Speed +10%
+				Enemies
+				- Apart of the class (HP and Damage are CONST)
+					- Spawn rate and maybe speed increase (caution)?
+			- Scoring system (Picking up the fireflys) 0 / 50
+			- Boss fight (Ever second round)
+				- Think about boss mechanics 
+			- Buttons
+				- Next level: Weapon +10% Enemies +10% spawnrate
+				- Game over: Red text "Game Over"
+		- Collision Logic
+			- Rock only dies when it hits a large enemy
+		- Ants - Boids - Could make the variables stronger
+		- Collision with the rock and the enemies
 
-Other Todos
-- Scoring system for the fireflies
-- Make penguin models smaller
-- Menu UI
-- Different levels
+Extra Todos
 - sound?

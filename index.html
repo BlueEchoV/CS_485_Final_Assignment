@@ -56,8 +56,6 @@
                     'SPACE_BAR' : null
                                 }
 
-    
-
     //for spacebar
     var pressed = false;
 
@@ -158,8 +156,6 @@
         var forground_length  = sprites_to_draw[1].length;
         var has_background_changed = false;
         
-        
-
         const context = canvas.getContext('2d');
         //context.clearRect(0, 0, canvas.width, canvas.height);
 
@@ -167,8 +163,6 @@
         for(var i = 0; i < background_length; i++){
             has_background_changed = sprites_to_draw[0][i].draw();
         }
-
-        
 
         document.body.onkeydown = function(e){
             
@@ -217,9 +211,6 @@
                 key_press["SPACE_BAR"] = null;
                 pressed = false;
             }
-            
-            
-            
 
             if(key_press["UP"] == null && key_press["RIGHT"] == null && key_press["LEFT"] == null && key_press["DOWN"] == null){
                 key_change = false;
@@ -232,15 +223,15 @@
         
         //Draw forground sprites
         for(var sprites of sprites_to_draw[1]){
-            
-
             if (typeof sprites.flock === "function") { 
                 sprites.edges(canvas.width,canvas.height);
                 sprites.draw({ 'foreground_sprites' : sprites_to_draw[1]
                                         });
                 sprites.flock(sprites_to_draw[1]);
-                
             } else {
+				// This is a dictionary that is passed
+				// This is so these values are accessable inside the .js class
+				// Key / Value pair 
                 sprites.draw( { 'has_background_changed' : has_background_changed,
                                           'key_change' : key_change,
                                           'key_press' : key_press,

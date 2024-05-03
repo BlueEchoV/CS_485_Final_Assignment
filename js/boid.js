@@ -62,7 +62,8 @@ class Boid{
                 let dx = this.x - other.x;
                 let dy = this.y - other.y;
                 let distance = Math.sqrt(dx * dx + dy * dy);
-                let minDistance = this.sprite_json[this.root_e][this.state][this.cur_frame]['w'] / 2 + this.sprite_json[this.root_e][this.state][this.cur_frame]['w'] / 2;
+				// Incrrease the radius some (not divided by 2)
+                let minDistance = this.sprite_json[this.root_e][this.state][this.cur_frame]['w'] / 1.5+ this.sprite_json[this.root_e][this.state][this.cur_frame]['h'] / 1.5;
 
                 if (distance < minDistance) {
                     // Simple response: move away from the collision point
@@ -151,8 +152,6 @@ class Boid{
 		// Reset acceleration to 0 after each update
 		this.acceleration_X = 0;
 		this.acceleration_Y = 0;
-
-            
 
         this.update_animation();
         
@@ -319,8 +318,6 @@ class Boid{
 			this.acceleration_Y += steering_y;
 		}
 	}
-
-	
 
 	/*
 	show() {

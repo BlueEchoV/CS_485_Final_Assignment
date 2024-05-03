@@ -26,8 +26,6 @@ class projectile{
     draw(state){
         var ctx = canvas.getContext('2d');
 
-        
-
         if( this.cur_bk_data != null){
             ctx.putImageData(this.cur_bk_data , (this.x - this.x_v) , (this.y - this.y_v));
         }
