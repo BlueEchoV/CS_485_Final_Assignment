@@ -70,71 +70,63 @@
 	load_Jsons(); 
 
 	async function load_Jsons() {
-		//Preload Boss
-		$.getJSON( "assets/enemy_boss_imgs/animationData.json", function( data ) {
-				
-				for(var i = 0;i< boss_states.length;i++){
-					for(var j = 0; j < data["boss"][boss_states[i]].length; j++){
-						console.log("loading spider data");
-						data["boss"][boss_states[i]][j]['img'] = new Image();
-						data["boss"][boss_states[i]][j]['img'].src = 'assets/enemy_boss_imgs/' + boss_states[i] + '/' + j + '.png';
-					}
+		// Preload Boss
+		const bossData = await $.getJSON("assets/enemy_boss_imgs/animationData.json");
+			for (let i = 0; i < boss_states.length; i++) {
+				for (let j = 0; j < bossData["boss"][boss_states[i]].length; j++) {
+					console.log("loading boss data");
+					bossData["boss"][boss_states[i]][j]['img'] = new Image();
+					bossData["boss"][boss_states[i]][j]['img'].src = 'assets/enemy_boss_imgs/' + boss_states[i] + '/' + j + '.png';
 				}
-		sprites_to_draw[1].push( new Boss(data, "walk_E") );
-		});
+			}
+		sprites_to_draw[1].push(new Boss(bossData, "walk_E"));
 
-		//Preload Spider
-		$.getJSON( "assets/enemy_spider_imgs/animationData.json", function( data ) {
-				
-					for(var i = 0;i< spider_states.length;i++){
-						for(var j = 0; j < data["spider"][spider_states[i]].length; j++){
-							console.log("loading spider data");
-							data["spider"][spider_states[i]][j]['img'] = new Image();
-							data["spider"][spider_states[i]][j]['img'].src = 'assets/enemy_spider_imgs/' + spider_states[i] + '/' + j + '.png';
-						}
-					}
-			sprites_to_draw[1].push( new spider(data, "walk_E") );
-		});
+		// Preload Spider
+		const spiderData = await $.getJSON("assets/enemy_spider_imgs/animationData.json");
+			for (let i = 0; i < spider_states.length; i++) {
+				for (let j = 0; j < spiderData["spider"][spider_states[i]].length; j++) {
+					console.log("loading spider data");
+					spiderData["spider"][spider_states[i]][j]['img'] = new Image();
+					spiderData["spider"][spider_states[i]][j]['img'].src = 'assets/enemy_spider_imgs/' + spider_states[i] + '/' + j + '.png';
+				}
+			}
+		sprites_to_draw[1].push(new spider(spiderData, "walk_E"));
 
+		
 		//Preload Player
-		$.getJSON( "assets/player_imgs/animationData.json", function( data ) {
-				
-					for(var i = 0;i< player_states.length;i++){
-						for(var j = 0; j < data["player"][player_states[i]].length; j++){
-							console.log("loading player data");
-							data["player"][player_states[i]][j]['img'] = new Image();
-							data["player"][player_states[i]][j]['img'].src = 'assets/player_imgs/' + player_states[i] + '/' + j + '.png';
-						}
-					}
-			sprites_to_draw[1].push( new Sprite(data, 150 ,600, "idle") );
-		});
+		const playerData = await $.getJSON( "assets/player_imgs/animationData.json");
+			for(var i = 0;i< player_states.length;i++){
+				for(var j = 0; j < playerData["player"][player_states[i]].length; j++) {
+					console.log("loading player data");
+					playerData["player"][player_states[i]][j]['img'] = new Image();
+					playerData["player"][player_states[i]][j]['img'].src = 'assets/player_imgs/' + player_states[i] + '/' + j + '.png';
+				}
+			}
+		sprites_to_draw[1].push( new Sprite(playerData, 150 ,600, "idle") );
 
 		//Preload firefly
-		$.getJSON( "assets/firefly_imgs/animationData.json", function( data ) {
-			for(var i = 0;i< firefly_states.length;i++){
-						for(var j = 0; j < data["firefly"][firefly_states[i]].length; j++){
+		const fireflyData = await $.getJSON("assets/firefly_imgs/animationData.json");
+			for(var i = 0;i< firefly_states.length;i++) {
+						for(var j = 0; j < fireflyData["firefly"][firefly_states[i]].length; j++) {
 							console.log("loading firefly data");
-							data["firefly"][firefly_states[i]][j]['img'] = new Image();
-							data["firefly"][firefly_states[i]][j]['img'].src = 'assets/firefly_imgs/' + firefly_states[i] + '/' + j + '.png';
+							fireflyData["firefly"][firefly_states[i]][j]['img'] = new Image();
+							fireflyData["firefly"][firefly_states[i]][j]['img'].src = 'assets/firefly_imgs/' + firefly_states[i] + '/' + j + '.png';
 						}
+				for(var i = 0; i < 100;i++) {
+					sprites_to_draw[1].push( new Boid(fireflyData, "idle") );
+				}
 			}
-			for(var i = 0; i < 100;i++){
-				sprites_to_draw[1].push( new Boid(data, "idle") );
-			}
-			
-		});
 
 		//Preload rock
-		$.getJSON( "assets/rock_imgs/animationData.json", function( data ) {
+		const rockData = await $.getJSON( "assets/rock_imgs/animationData.json");
 			for(var i = 0;i< rock_states.length;i++){
-						for(var j = 0; j < data["rock"][rock_states[i]].length; j++){
+						for(var j = 0; j < rockData["rock"][rock_states[i]].length; j++) {
 							console.log("loading rock data");
-							data["rock"][rock_states[i]][j]['img'] = new Image();
-							data["rock"][rock_states[i]][j]['img'].src = 'assets/rock_imgs/' + rock_states[i] + '/' + j + '.png';
+							rockData["rock"][rock_states[i]][j]['img'] = new Image();
+							rockData["rock"][rock_states[i]][j]['img'].src = 'assets/rock_imgs/' + rock_states[i] + '/' + j + '.png';
 						}
 			}
-			rock_data = data;
-		});
+			rock_data = rockData;
 	}
 
     $( document ).ready(function() {
