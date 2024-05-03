@@ -44,15 +44,15 @@ class Boid{
     }
 	
 	edges(width, height) {
-		if (this.x > width) {
-			this.x = 0;
-		} else if (this.x < 0) {
-			this.x = width;
+		if (this.x > width + 50) {
+			this.x = -50;
+		} else if (this.x < -50) {
+			this.x = width + 50;
 		}
-		if (this.y > height) {
-			this.y = 0;
-		} else if (this.y < 0) {
-			this.y = height;
+		if (this.y > height + 50) {
+			this.y = -50;
+		} else if (this.y < -50) {
+			this.y = height + 50;
 		}
 	}
 	
@@ -109,7 +109,9 @@ class Boid{
             this.sprite_json[this.root_e][this.state][this.cur_frame]['img'] = new Image();
             this.sprite_json[this.root_e][this.state][this.cur_frame]['img'].src = 'Penguins/' + this.root_e + '/' + this.state + '/' + this.cur_frame + '.png';
         }*/
-
+		
+		/*
+		NOTE: Another strategy for clearing the background before drawing but it is very costly with a ton of sprites
         if( this.cur_bk_data != null){
             ctx.putImageData(this.cur_bk_data , (this.x - this.x_v) , (this.y - this.y_v));
         }
@@ -117,9 +119,10 @@ class Boid{
         this.cur_bk_data = ctx.getImageData(this.x, this.y, 
             this.sprite_json[this.root_e][this.state][this.cur_frame]['w'], 
             this.sprite_json[this.root_e][this.state][this.cur_frame]['h']);
-
-            
-        ctx.drawImage(this.sprite_json[this.root_e][this.state][this.cur_frame]['img'], this.x, this.y );
+		*/
+		// Draw the sprite
+		ctx.drawImage(this.sprite_json[this.root_e][this.state][this.cur_frame]['img'], this.x, this.y ); // Draw the sprite
+		// ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
 
         this.count += 1;
 
@@ -127,7 +130,6 @@ class Boid{
             this.cur_frame = this.cur_frame + 1;
             this.count = 1;
         }
-            
 
         if(this.cur_frame >= this.sprite_json[this.root_e][this.state].length){
             //console.log(this.cur_frame);
@@ -154,13 +156,10 @@ class Boid{
 		this.acceleration_Y = 0;
 
         this.update_animation();
-        
-        
 
         return false;
         
     }
-
 
     set_idle_state(){
         this.idle = true;

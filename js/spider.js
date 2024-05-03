@@ -27,7 +27,7 @@ class spider{
         var ctx = canvas.getContext('2d');
 
         
-
+/*
         if( this.cur_bk_data != null){
             ctx.putImageData(this.cur_bk_data , (this.x - this.x_v) , (this.y - this.y_v));
         }
@@ -35,7 +35,7 @@ class spider{
         this.cur_bk_data = ctx.getImageData(this.x, this.y, 
             this.sprite_json[this.root_e][this.state][this.cur_frame]['w'], 
             this.sprite_json[this.root_e][this.state][this.cur_frame]['h']);
-
+*/
             
         ctx.drawImage(this.sprite_json[this.root_e][this.state][this.cur_frame]['img'], this.x, this.y );
 
@@ -54,11 +54,7 @@ class spider{
 
         //Move towards player
         this.track_player(state['foreground_sprites']);
-
-
-        
-
-
+		
             //If we're not idle, then we should be moving!
             this.x += this.x_v;
             this.y += this.y_v;

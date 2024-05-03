@@ -35,6 +35,7 @@ class Sprite {
             this.sprite_json[this.root_e][this.state][this.cur_frame]['img'].src = 'Penguins/' + this.root_e + '/' + this.state + '/' + this.cur_frame + '.png';
         }*/
         
+		/*
         if( this.cur_bk_data != null){
             ctx.putImageData(this.cur_bk_data , (this.x - this.x_v) , (this.y - this.y_v));
         }
@@ -42,7 +43,7 @@ class Sprite {
         this.cur_bk_data = ctx.getImageData(this.x, this.y, 
                         this.sprite_json[this.root_e][this.state][this.cur_frame]['w'], 
                         this.sprite_json[this.root_e][this.state][this.cur_frame]['h']);
-                        
+	   */             
             
         ctx.drawImage(this.sprite_json[this.root_e][this.state][this.cur_frame]['img'], this.x, this.y );
 
@@ -172,7 +173,7 @@ class Sprite {
                     
                     //If collided with enemy spider
                     if(others[i].enemy){
-                        console.log("you died LOL");
+                        // console.log("you died LOL");
                     }
                     if(others[i].constructor.name == "Boid"){
                         others.splice(i, 1);
