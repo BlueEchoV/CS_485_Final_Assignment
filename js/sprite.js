@@ -1,7 +1,6 @@
-
 class Sprite {
     constructor(sprite_json, x, y, start_state){
-        console.log("yo");
+        // console.log("yo");
         this.sprite_json = sprite_json;
         this.x = x;
         this.y = y;
@@ -14,6 +13,8 @@ class Sprite {
 
         this.x_v = 0;
         this.y_v = 0;
+
+        this.projectile_speed = 10;
 
         this.set_v = 5;
 
@@ -33,19 +34,16 @@ class Sprite {
             this.sprite_json[this.root_e][this.state][this.cur_frame]['img'] = new Image();
             this.sprite_json[this.root_e][this.state][this.cur_frame]['img'].src = 'Penguins/' + this.root_e + '/' + this.state + '/' + this.cur_frame + '.png';
         }*/
-
-
-
         
+		/*
         if( this.cur_bk_data != null){
             ctx.putImageData(this.cur_bk_data , (this.x - this.x_v) , (this.y - this.y_v));
         }
 
-        
         this.cur_bk_data = ctx.getImageData(this.x, this.y, 
                         this.sprite_json[this.root_e][this.state][this.cur_frame]['w'], 
                         this.sprite_json[this.root_e][this.state][this.cur_frame]['h']);
-                        
+	   */             
             
         ctx.drawImage(this.sprite_json[this.root_e][this.state][this.cur_frame]['img'], this.x, this.y );
 
@@ -111,10 +109,6 @@ class Sprite {
 
         this.detect_collision(state['foreground_sprites']);
 
-        
-        
-        
-
         return false;
         
     }
@@ -140,7 +134,7 @@ class Sprite {
         var proj_x_v = Math.cos(angle);
         var proj_y_v = Math.sin(angle);
 
-        state["foreground_sprites"].push( new projectile(state["rock_data"], "move", this.x,this.y, 5*proj_x_v, 5*proj_y_v) );
+        state["foreground_sprites"].push( new projectile(state["rock_data"], "move", this.x,this.y, this.projectile_speed*proj_x_v, this.projectile_speed*proj_y_v) );
 
         //console.log(angle + " " + proj_x_v + " " + proj_y_v);
     }
@@ -171,8 +165,6 @@ class Sprite {
 
     detect_collision(others){
        for(var i = 0; i < others.length; i++){
-            
-            
             //Check if collided with any sprites
             if( this.x <= (others[i].x + others[i].sprite_json[others[i].root_e][others[i].state][others[i].cur_frame]['w']) &&
                 (this.x + this.sprite_json[this.root_e][this.state][this.cur_frame]['w']) >= others[i].x && 
@@ -181,13 +173,12 @@ class Sprite {
                     
                     //If collided with enemy spider
                     if(others[i].enemy){
-                        console.log("you died LOL");
+                        // console.log("you died LOL");
                     }
                     if(others[i].constructor.name == "Boid"){
                         others.splice(i, 1);
-                        console.log("yo");
+                        this.points += 1;
                     }
-                   
             }
         }
     }

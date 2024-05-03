@@ -1,9 +1,9 @@
-class Boid{
+class Ant{
 	constructor(sprite_json,start_state){
 		console.log("Inside constructor");
         this.sprite_json = sprite_json;
 
-        this.root_e = "firefly";
+        this.root_e = "ant";
 
         this.cur_frame = 0;
 
@@ -23,6 +23,9 @@ class Boid{
 		// RANDOM_POS_X
         this.maxSpeed = 2;
 		this.perception = 50;
+
+		this.enemy = true;
+		this.small_enemy = true;
 		
 		// Alignment: Helps a boid to steer towards the 
 		// average heading of its local flockmates.
@@ -56,29 +59,7 @@ class Boid{
 		}
 	}
 	
-	checkCollisions(boids) {
-        for (let other of boids) {
-            if (other !== this && other.constructor.name == "Boid") {
-                let dx = this.x - other.x;
-                let dy = this.y - other.y;
-                let distance = Math.sqrt(dx * dx + dy * dy);
-				// Incrrease the radius some (not divided by 2)
-                let minDistance = this.sprite_json[this.root_e][this.state][this.cur_frame]['w'] / 1.5+ this.sprite_json[this.root_e][this.state][this.cur_frame]['h'] / 1.5;
-
-                if (distance < minDistance) {
-                    // Simple response: move away from the collision point
-                    let overlap = minDistance - distance;
-                    let adjustX = (dx / distance) * overlap / 2;
-                    let adjustY = (dy / distance) * overlap / 2;
-
-                    this.x += adjustX;
-                    this.y += adjustY;
-                    other.x -= adjustX;
-                    other.y -= adjustY;
-                }
-            }
-        }
-    }
+	
 	/*
 	update() {
 		// Update velocity
@@ -178,7 +159,6 @@ class Boid{
         this.align(boids);
         this.cohesion(boids);
         this.separation(boids);
-		this.checkCollisions(boids);
     }
 
 	align(boids){
@@ -188,7 +168,7 @@ class Boid{
 		let steering_y = 0;
 
 		for(let other of boids){
-			if(other.constructor.name == "Boid"){
+			if(other.constructor.name == "Ant"){
 				let a = this.x - other.x;
 				let b = this.y - other.y;
 				let d = Math.sqrt(a*a + b*b);
@@ -235,7 +215,7 @@ class Boid{
 
 		let total = 0;
 		for(let other of boids){
-			if(other.constructor.name == "Boid"){
+			if(other.constructor.name == "Ant"){
 				let a = this.x - other.x;
 				let b = this.y - other.y;
 				let d = Math.sqrt(a * a + b * b);
@@ -279,7 +259,7 @@ class Boid{
 		let steering_y = 0;
 
 		for(let other of boids){
-			if(other.constructor.name == "Boid"){
+			if(other.constructor.name == "Ant"){
 				let a = this.x - other.x;
 				let b = this.y - other.y;
 				let d = Math.sqrt(a * a + b * b);
@@ -349,24 +329,13 @@ class Boid{
 
     update_animation(){
         //Change animation correlated to the direction we're moving
-		/*
-        if(this.x_v > 0 && this.y_v < 0){
-            this.state = "walk_NE";
-        } else if (this.x_v < 0 && this.y_v < 0){
-            this.state = "walk_NW";
-        } else if (this.x_v < 0 && this.y_v > 0){
-             this.state = "walk_SW";
-        } else if (this.x_v > 0 && this.y_v > 0){
-            this.state = "walk_SE";
-        } else if(this.x_v > 0 && this.y_v == 0){
-            this.state = "walk_E";
-        }else if(this.x_v < 0 && this.y_v == 0){
+
+        if(this.x_v > 0){
             this.state = "walk_W";
-        }else if(this.y_v > 0 && this.x_v == 0){
-            this.state = "walk_S";
-        }else if(this.y_v < 0 && this.x_v == 0){
-            this.state = "walk_N";
-        }*/
+        }else if(this.x_v < 0){
+            this.state = "walk_E";
+		}
+
 
         //Check if our new animation will put us out of bounds, and if so set current frame to 0
         if(this.cur_frame >= this.sprite_json[this.root_e][this.state].length){
