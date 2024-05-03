@@ -21,11 +21,10 @@ Game Design Document
 		
 TODO List:
 	Michael P
-		- TODO: Create more background sprites
-		- TODO: BUG: Overlapping images
-			ODO: T- Player 
+		- DONE: BUG: Overlapping images
+			- DONE: BUG: Player smearing
+		- DONE: Create more background sprites
 		- TODO: BUG: Have the spider / lady bug spawn at the edge of the map
-		- TODO: BUG: Don't let the enemies overlap with the player 
 		- TODO: Rock exploding on hit 
 		- TODO: Finish moving animations
 		- TODO: Death animations for ants, spider, ladybug
@@ -36,8 +35,12 @@ TODO List:
 		- TODO: Ammo system (Like in my game)
 		- TODO: Menu System
 		- TODO: Insta death
+			- TODO: BUG: Don't let the enemies overlap with the player 
 			- Reset game states
 
+	Extra Bugs:
+		- Images not based off the screen size (Many bugs)
+	
 	Michael B
 		- Remove black margin
 		- Level logic
