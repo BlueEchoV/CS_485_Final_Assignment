@@ -27,6 +27,8 @@ TODO List:
 		- DONE: Rock exploding on hit 
 		- DONE: Finish moving animations
 		- TODO: BUG: Have the spider / lady bug spawn at the edge of the map
+			- Have them spawn their width outside of the boundary and walk towards the player. (Could be a random 
+			position within a range)
 		- TODO: Get ants spawning (Outside of map bounds)
 			- Spawning enemies towards the player
 			- Black box behind the fireflies
