@@ -51,7 +51,6 @@ class spider{
 
     draw(state){
         var ctx = canvas.getContext('2d');
-
         
 		/*
         if( this.cur_bk_data != null){

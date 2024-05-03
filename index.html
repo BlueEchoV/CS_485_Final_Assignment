@@ -137,9 +137,15 @@
             ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
         };
 
-        img.src = 'assets/bkg_imgs/bk_1.jpg';
-        // img.src = 'assets/bkg_imgs/bk_2.jpg';
-         // img.src = 'assets/bkg_imgs/bk_3.jpg';
+		// Random background spawns
+		var random_Bkg = Math.random() * 3;
+		if (random_Bkg < 1) {
+			img.src = 'assets/bkg_imgs/bk_1.jpg';
+		} else if (random_Bkg >= 1 && random_Bkg < 2) {
+			img.src = 'assets/bkg_imgs/bk_2.jpg';
+		} else if (random_Bkg >= 2 && random_Bkg < 3) {
+			img.src = 'assets/bkg_imgs/bk_3.jpg';
+		}
 
         setTimeout(() => {
             requestAnimationFrame(draw_loop);
