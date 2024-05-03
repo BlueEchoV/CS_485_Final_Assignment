@@ -24,11 +24,9 @@ TODO List:
 		- DONE: BUG: Overlapping images
 			- DONE: BUG: Player smearing
 		- DONE: Create more background sprites
+		- DONE: Rock exploding on hit 
+		- DONE: Finish moving animations
 		- TODO: BUG: Have the spider / lady bug spawn at the edge of the map
-		- TODO: Rock exploding on hit 
-		- TODO: Finish moving animations
-		- TODO: Death animations for ants, spider, ladybug
-			- When enemies die, play it
 		- TODO: Get ants spawning (Outside of map bounds)
 			- Spawning enemies towards the player
 			- Black box behind the fireflies
@@ -37,6 +35,8 @@ TODO List:
 		- TODO: Insta death
 			- TODO: BUG: Don't let the enemies overlap with the player 
 			- Reset game states
+		- TODO: Death animations for ants, spider, ladybug
+			- When enemies die, play it
 
 	Extra Bugs:
 		- Images not based off the screen size (Many bugs)
