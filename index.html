@@ -98,86 +98,80 @@
 	load_Jsons(); 
 
 	async function load_Jsons() {
-		//Preload Boss
-		$.getJSON( "assets/enemy_boss_imgs/animationData.json", function( data ) {
-				
-				for(var i = 0;i< boss_states.length;i++){
-					for(var j = 0; j < data["boss"][boss_states[i]].length; j++){
-						console.log("loading spider data");
-						data["boss"][boss_states[i]][j]['img'] = new Image();
-						data["boss"][boss_states[i]][j]['img'].src = 'assets/enemy_boss_imgs/' + boss_states[i] + '/' + j + '.png';
-					}
-				}
-            sprites_to_draw[1].push( new Boss(data, "walk_E") );
-            boss_data = data;
-		});
+        // Load in order to the array
+        
+        // Fetch Boss Data
+        let response = await fetch("assets/enemy_boss_imgs/animationData.json");
+        let data = await response.json();
+        for (let i = 0; i < boss_states.length; i++) {
+            for (let j = 0; j < data["boss"][boss_states[i]].length; j++) {
+                console.log("loading boss data");
+                data["boss"][boss_states[i]][j]['img'] = new Image();
+                data["boss"][boss_states[i]][j]['img'].src = 'assets/enemy_boss_imgs/' + boss_states[i] + '/' + j + '.png';
+            }
+        }
+        sprites_to_draw[1].push(new Boss(data, "walk_E"));
+        boss_data = data;
 
-		//Preload Spider
-		$.getJSON( "assets/enemy_spider_imgs/animationData.json", function( data ) {
-				
-					for(var i = 0;i< spider_states.length;i++){
-						for(var j = 0; j < data["spider"][spider_states[i]].length; j++){
-							console.log("loading spider data");
-							data["spider"][spider_states[i]][j]['img'] = new Image();
-							data["spider"][spider_states[i]][j]['img'].src = 'assets/enemy_spider_imgs/' + spider_states[i] + '/' + j + '.png';
-						}
-					}
-            spider_data = data;
-			//sprites_to_draw[1].push( new spider(data, "walk_E") );
-		});
+        // Fetch Spider Data
+        response = await fetch("assets/enemy_spider_imgs/animationData.json");
+        data = await response.json();
+        for (let i = 0; i < spider_states.length; i++) {
+            for (let j = 0; j < data["spider"][spider_states[i]].length; j++) {
+                console.log("loading spider data");
+                data["spider"][spider_states[i]][j]['img'] = new Image();
+                data["spider"][spider_states[i]][j]['img'].src = 'assets/enemy_spider_imgs/' + spider_states[i] + '/' + j + '.png';
+            }
+        }
+        spider_data = data;
 
-		//Preload Player
-		$.getJSON( "assets/player_imgs/animationData.json", function( data ) {
-				
-					for(var i = 0;i< player_states.length;i++){
-						for(var j = 0; j < data["player"][player_states[i]].length; j++){
-							console.log("loading player data");
-							data["player"][player_states[i]][j]['img'] = new Image();
-							data["player"][player_states[i]][j]['img'].src = 'assets/player_imgs/' + player_states[i] + '/' + j + '.png';
-						}
-					}
-			sprites_to_draw[1].push( new Sprite(data, 150 ,600, "idle") );
-		});
+        // Fetch Player Data
+        response = await fetch("assets/player_imgs/animationData.json");
+        data = await response.json();
+        for (let i = 0; i < player_states.length; i++) {
+            for (let j = 0; j < data["player"][player_states[i]].length; j++) {
+                console.log("loading player data");
+                data["player"][player_states[i]][j]['img'] = new Image();
+                data["player"][player_states[i]][j]['img'].src = 'assets/player_imgs/' + player_states[i] + '/' + j + '.png';
+            }
+        }
+        sprites_to_draw[1].push(new Sprite(data, 150, 600, "idle"));
 
-		//Preload firefly
-		$.getJSON( "assets/firefly_imgs/animationData.json", function( data ) {
-			for(var i = 0;i< firefly_states.length;i++){
-						for(var j = 0; j < data["firefly"][firefly_states[i]].length; j++){
-							console.log("loading firefly data");
-							data["firefly"][firefly_states[i]][j]['img'] = new Image();
-							data["firefly"][firefly_states[i]][j]['img'].src = 'assets/firefly_imgs/' + firefly_states[i] + '/' + j + '.png';
-						}
-			}
-			
-            firefly_data = data;
-			
-		});
+        // Fetch Firefly Data
+        response = await fetch("assets/firefly_imgs/animationData.json");
+        data = await response.json();
+        for (let i = 0; i < firefly_states.length; i++) {
+            for (let j = 0; j < data["firefly"][firefly_states[i]].length; j++) {
+                console.log("loading firefly data");
+                data["firefly"][firefly_states[i]][j]['img'] = new Image();
+                data["firefly"][firefly_states[i]][j]['img'].src = 'assets/firefly_imgs/' + firefly_states[i] + '/' + j + '.png';
+            }
+        }
+        firefly_data = data;
 
-        //Preload ant
-		$.getJSON( "assets/enemy_ant_imgs/animationData.json", function( data ) {
-			for(var i = 0;i< ant_states.length;i++){
-						for(var j = 0; j < data["ant"][ant_states[i]].length; j++){
-							console.log("loading ant data");
-							data["ant"][ant_states[i]][j]['img'] = new Image();
-							data["ant"][ant_states[i]][j]['img'].src = 'assets/enemy_ant_imgs/' + ant_states[i] + '/' + j + '.png';
-						}
-			}
-			
-            ant_data = data;
-			
-		});
+        // Fetch Ant Data
+        response = await fetch("assets/enemy_ant_imgs/animationData.json");
+        data = await response.json();
+        for (let i = 0; i < ant_states.length; i++) {
+            for (let j = 0; j < data["ant"][ant_states[i]].length; j++) {
+                console.log("loading ant data");
+                data["ant"][ant_states[i]][j]['img'] = new Image();
+                data["ant"][ant_states[i]][j]['img'].src = 'assets/enemy_ant_imgs/' + ant_states[i] + '/' + j + '.png';
+            }
+        }
+        ant_data = data;
 
-		//Preload rock
-		$.getJSON( "assets/rock_imgs/animationData.json", function( data ) {
-			for(var i = 0;i< rock_states.length;i++){
-						for(var j = 0; j < data["rock"][rock_states[i]].length; j++){
-							console.log("loading rock data");
-							data["rock"][rock_states[i]][j]['img'] = new Image();
-							data["rock"][rock_states[i]][j]['img'].src = 'assets/rock_imgs/' + rock_states[i] + '/' + j + '.png';
-						}
-			}
-			rock_data = data;
-		});
+        // Fetch Rock Data
+        response = await fetch("assets/rock_imgs/animationData.json");
+        data = await response.json();
+        for (let i = 0; i < rock_states.length; i++) {
+            for (let j = 0; j < data["rock"][rock_states[i]].length; j++) {
+                console.log("loading rock data");
+                data["rock"][rock_states[i]][j]['img'] = new Image();
+                data["rock"][rock_states[i]][j]['img'].src = 'assets/rock_imgs/' + rock_states[i] + '/' + j + '.png';
+            }
+        }
+        rock_data = data;
 	}
 
     $( document ).ready(function() {
@@ -276,7 +270,7 @@
 	   //Draw forground sprites
         for(var sprite of sprites_to_draw[1]){
 			if (test_Bool === false) {
-				// console.log("Drawing: ", sprite);
+				console.log("Drawing: ", sprite);
 			}
             if (typeof sprite.flock === "function") { 
                 sprite.edges(canvas.width,canvas.height);

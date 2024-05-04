@@ -120,30 +120,24 @@ class spider{
         //Move towards x coordinate of main actor
         for(var sprite of sprites){
             if(sprite.constructor.name == "Sprite"){
-
-                if(this.x == sprite.x){
+                // Stops the stuttering that occurs
+                const threshold = 10;
+                if (Math.abs(this.x - sprite.x) <= threshold) {
                     this.x_v = 0;
-                    //console.log("3")
-                } else if(this.x < sprite.x){
-                    //console.log("4")
+                } else if (this.x < sprite.x) {
                     this.x_v = this.set_v;
-                } else {
+                } else if (this.x > sprite.x) {
                     this.x_v = -this.set_v;
                 }
-        
-                //Move towards y coordinate of main actor
-                if(this.y == sprite.y){
-                    //console.log("1")
+
+                if (Math.abs(this.y - sprite.y) <= threshold) {
                     this.y_v = 0;
-                }else if(this.y < sprite.y){
-                    //console.log("2")
-                    this.y_v = this.set_v;
-                } else {
+                } else if (this.y < sprite.y) {
+                    this.y_v = this.set_v; 
+                } else if (this.y > sprite.y) {
                     this.y_v = -this.set_v;
                 }
-            }
-
-            
+            }   
         }
         
     }

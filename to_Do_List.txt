@@ -31,16 +31,16 @@ TODO List:
 			position within a range)
 		- DONE (Sort of): Get ants spawning (Outside of map bounds)
 			- Spawning enemies towards the player
-		- TODO: Fix the spiders stuttering
+		- DONE: Fix the spiders stuttering
 		- DONE: Ammo system (Like in my game)
 			- Ammo recharges and the player can spray the rocks / bullets out if they want to
-		- TODO: Insta death
+		- DONE: Insta death
 			- Reset game states
-		- TODO: Death animations for ants, spider, ladybug
-			- When enemies die, play it
 		- TODO: Boss HP (other.hp -= damage)
 			- 8 HP, spiders 3, ants 1
 		- TODO: Menu System
+		- TODO: Death animations for ants, spider, ladybug
+			- When enemies die, play it
 		
 		- TODO: Multiple characters? Guy and a girl? Different weapons for both?
 			- Guy throws a boulder to crush enemies
