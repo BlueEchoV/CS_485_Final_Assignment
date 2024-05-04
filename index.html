@@ -39,7 +39,13 @@
     const space_bar = 32;
 
     var level = 1;
+
+    var current_Time = 0;
+    var last_Time = Date.now();;
+    var delta_Time = 0;
+
     var start = new Date();
+    var elapsed = 0;
 
     var mouse_x;
     var mouse_y;
@@ -67,7 +73,7 @@
                                 }
 
     //for spacebar
-    var pressed = false;
+    var spacebar_Pressed = false;
 
     //
     var rock_data = null;
@@ -165,7 +171,6 @@
 	}
 
     $( document ).ready(function() {
-        
         console.log( "Page is now ready" );
         resize();
         img.onload = function() {
@@ -182,7 +187,67 @@
 
     window.addEventListener('resize', resize);
 
+    document.body.onkeydown = function(e){
+        if(e.keyCode == up_arrow){
+            key_change = true;
+            key_press["UP"] = e.keyCode;
+        } 
+        if(e.keyCode == right_arrow){
+            //alert(String.fromCharCode(e.keyCode)+" --> "+e.keyCode);
+            key_change = true;
+            key_press["RIGHT"] = e.keyCode;
+        }
+        if(e.keyCode == left_arrow){
+            key_change = true;
+            key_press["LEFT"] = e.keyCode;
+        }
+        if(e.keyCode == down_arrow){
+            key_change = true;
+            key_press["DOWN"] = e.keyCode;
+        }
+        if(e.keyCode == space_bar){
+            // Stops the scrolling
+            e.preventDefault()
+            // We wan the rocks to be spamable
+            key_press["SPACE_BAR"] = e.keyCode;
+            spacebar_Pressed = true;
+        }
+        
+    
+    };
+    document.body.onkeyup = function(e){
+        //alert(e.keyCode);
+        
+        if(key_press["UP"] == e.keyCode){
+            key_press["UP"] = null;
+        }
+        if(key_press["RIGHT"] == e.keyCode){
+            key_press["RIGHT"] = null;
+        }
+        if(key_press["LEFT"] == e.keyCode){
+            key_press["LEFT"] = null;
+        }
+        if(key_press["DOWN"] == e.keyCode){
+            key_press["DOWN"] = null;
+        }
+
+        if(e.keyCode == space_bar){
+            key_press["SPACE_BAR"] = null;
+            spacebar_Pressed = false;
+        }
+
+        if(key_press["UP"] == null && key_press["RIGHT"] == null && key_press["LEFT"] == null && key_press["DOWN"] == null){
+            key_change = false;
+        }
+        
+    };
+
     function draw_loop(){
+
+        last_Time = current_Time;
+        current_Time = Date.now();
+        delta_Time = current_Time - last_Time;
+        
         var background_length = sprites_to_draw[0].length;
         var forground_length  = sprites_to_draw[1].length;
         var has_background_changed = false;
@@ -192,61 +257,6 @@
             has_background_changed = sprites_to_draw[0][i].draw();
         }
 
-        document.body.onkeydown = function(e){
-            
-            if(e.keyCode == up_arrow){
-                key_change = true;
-                key_press["UP"] = e.keyCode;
-            } 
-            if(e.keyCode == right_arrow){
-                //alert(String.fromCharCode(e.keyCode)+" --> "+e.keyCode);
-                key_change = true;
-                key_press["RIGHT"] = e.keyCode;
-            }
-            if(e.keyCode == left_arrow){
-                key_change = true;
-                key_press["LEFT"] = e.keyCode;
-            }
-            if(e.keyCode == down_arrow){
-                key_change = true;
-                key_press["DOWN"] = e.keyCode;
-            }
-            if(e.keyCode == space_bar){
-                e.preventDefault()
-                if(!pressed)
-                    key_press["SPACE_BAR"] = e.keyCode;
-                pressed = true;
-            }
-            
-        
-        };
-        document.body.onkeyup = function(e){
-            //alert(e.keyCode);
-            
-            if(key_press["UP"] == e.keyCode){
-                key_press["UP"] = null;
-            }
-            if(key_press["RIGHT"] == e.keyCode){
-                key_press["RIGHT"] = null;
-            }
-            if(key_press["LEFT"] == e.keyCode){
-                key_press["LEFT"] = null;
-            }
-            if(key_press["DOWN"] == e.keyCode){
-                key_press["DOWN"] = null;
-            }
-
-            if(e.keyCode == space_bar){
-                key_press["SPACE_BAR"] = null;
-                pressed = false;
-            }
-
-            if(key_press["UP"] == null && key_press["RIGHT"] == null && key_press["LEFT"] == null && key_press["DOWN"] == null){
-                key_change = false;
-            }
-            
-        };
-		
         var ctx = canvas.getContext('2d');
 		ctx.clearRect(0, 0, canvas.width, canvas.height);
 		// ctx.globalCompositeOperation = 'destination-over';
@@ -255,7 +265,7 @@
 	   //Draw forground sprites
         for(var sprite of sprites_to_draw[1]){
 			if (test_Bool === false) {
-				console.log("Drawing: ", sprite);
+				// console.log("Drawing: ", sprite);
 			}
             if (typeof sprite.flock === "function") { 
                 sprite.edges(canvas.width,canvas.height);
@@ -271,7 +281,10 @@
                                           'key_press' : key_press,
                                           'foreground_sprites' : sprites_to_draw[1],
                                           'mouse_coords' : {'x' : mouse_x, 'y' : mouse_y},
-                                          'rock_data' : rock_data
+                                          'rock_data' : rock_data,
+                                          // For the sprite.js rock casting
+                                          'delta_Time' : delta_Time,
+                                          'spacebar_Pressed' : spacebar_Pressed
                                         }
             );
                 if(sprite.constructor.name == "Sprite"){
@@ -308,10 +321,9 @@
     var spider_scale = 1;
     var spider_speed = 1;
     function level_logic(sprite){
-            
-            
 
-            var elapsed = new Date() - start;
+            // delta time
+            elapsed = new Date() - start;
 
 
             //On level up, once at start of level
@@ -362,10 +374,9 @@
 
     function random_background(){
         const random = Math.ceil(Math.random() * background_images.length);
-
-
         img.src = 'assets/bkg_imgs/bk_' + random + '.jpg';
     }
+
 </script>
 
 </body>

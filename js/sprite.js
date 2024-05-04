@@ -23,6 +23,16 @@ class Sprite {
         this.count = 1;
 
         this.points = 0;
+
+        this.ammo = 0;
+        // Milliseconds
+        this.ammo_CD = 750;
+        this.ammo_Current_CD = 0;
+
+        this.rock_Current_Fire_Interval = 0;
+        // In milliseconds
+        this.rock_Fire_Interval = 50;
+        this.fire_Projectile = false;
     }
 
     draw(state){
@@ -68,13 +78,37 @@ class Sprite {
             this.y_v = 0;
         }
 
-        if(state['key_press']["SPACE_BAR"] != null){
-            state['key_press']["SPACE_BAR"] = null;
-            this.fire_projectile(state);
+        // *****************PROJECTILE*****************
+        // rock_Current_Fire_Interval is how fast the rocks fire when spacebar is held down
+        if (this.rock_Current_Fire_Interval <= 0) {
+            if (spacebar_Pressed) {
+                this.fire_Projectile = true;
+                this.rock_Current_Fire_Interval = this.rock_Fire_Interval;
+            }
+        } else {
+            // console.log("rock_Current_Fire_Interval", rock_Current_Fire_Interval);
+            this.rock_Current_Fire_Interval -= delta_Time;
+            this.fire_Projectile = false;
         }
+        // Passed in through the dictionary
+        if(this.fire_Projectile){
+            if (this.ammo > 0) {
+                this.fire_projectile(state);
+                // console.log("Rock read");
+                this.ammo -= 1;
+            }
+        }
+        if (this.ammo_Current_CD <= 0) {
+            // console.log("ammo_Current_CD", this.ammo_Current_CD);
+            console.log("ammo", this.ammo);
+            this.ammo += 1;
+            this.ammo_Current_CD = this.ammo_CD;
+        } else {
+            this.ammo_Current_CD -= delta_Time;
+        }
+        // ********************************************
 
         if(this.idle == false){
-            
             //Screen border checks
             if(this.x >= (window.innerWidth - this.sprite_json[this.root_e][this.state][this.cur_frame]['w']) ){//Right
                 if(state['key_press']["RIGHT"] != null){ //These checks allow us to keep moving at the screen border, without leaving the screen.
