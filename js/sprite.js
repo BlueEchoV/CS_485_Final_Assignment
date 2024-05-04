@@ -177,6 +177,7 @@ class Sprite {
                     }
                     if(others[i].constructor.name == "Boid"){
                         others.splice(i, 1);
+                        this.points += 1;
                     }
             }
         }

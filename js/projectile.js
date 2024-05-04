@@ -19,7 +19,6 @@ class projectile{
 
         this.count = 1;
 
-        this.enemy = true; //declare this ogject as an enemy to the player, can add more attributes like damage, health, etc later
 
     }
 
@@ -57,6 +56,9 @@ class projectile{
 
         this.check_bounds(state);
 
+        //check if colliding with enemy
+        this.detect_collision(state['foreground_sprites']);
+
 
         this.update_animation();
         
@@ -88,6 +90,7 @@ class projectile{
         }
     }
 
+
     delete_self(state){
         for(var i = 0; i < state["foreground_sprites"].length; i++){
             if(state["foreground_sprites"][i] == this){
@@ -96,6 +99,28 @@ class projectile{
             }
         }
     }
+
+    detect_collision(others){
+        for(var i = 0; i < others.length; i++){
+             //Check if collided with any sprites
+             if( this.x <= (others[i].x + others[i].sprite_json[others[i].root_e][others[i].state][others[i].cur_frame]['w']) &&
+                 (this.x + this.sprite_json[this.root_e][this.state][this.cur_frame]['w']) >= others[i].x && 
+                 this.y <= (others[i].y + others[i].sprite_json[others[i].root_e][others[i].state][others[i].cur_frame]['h']) && 
+                 (this.y + this.sprite_json[this.root_e][this.state][this.cur_frame]['h']) >= others[i].y){
+                     
+                     //If collided with enemy spider
+                     if(others[i].enemy){
+                        
+                        if(!others[i].small_enemy){ //don't delete rock if small enemy
+                            others.splice(others.indexOf(this),1); //delete self
+                        }
+                        others.splice(i, 1); //delete enemy
+                            
+                     }
+                     
+             }
+         }
+     }
 
     update_animation(){
         //Change animation correlated to the direction we're moving
