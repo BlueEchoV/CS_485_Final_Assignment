@@ -34,11 +34,14 @@ TODO List:
 		- TODO: Fix the spiders stuttering
 		- DONE: Ammo system (Like in my game)
 			- Ammo recharges and the player can spray the rocks / bullets out if they want to
-		- TODO: Menu System
 		- TODO: Insta death
 			- Reset game states
 		- TODO: Death animations for ants, spider, ladybug
 			- When enemies die, play it
+		- TODO: Boss HP (other.hp -= damage)
+			- 8 HP, spiders 3, ants 1
+		- TODO: Menu System
+		
 		- TODO: Multiple characters? Guy and a girl? Different weapons for both?
 			- Guy throws a boulder to crush enemies
 				- Goes through small units

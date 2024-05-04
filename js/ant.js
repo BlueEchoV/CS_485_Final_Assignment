@@ -13,6 +13,8 @@ class Ant{
 
         this.count = 1;
 
+        this.hp = 1;
+
 		// Accleration
 		this.acceleration_X = 0;
 		this.acceleration_Y = 0;

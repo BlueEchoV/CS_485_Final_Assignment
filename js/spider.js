@@ -20,6 +20,8 @@ class spider{
         this.y = 0;
 		this.random_Off_Screen_Spawn_Position();
 
+        this.hp = 3;
+
         this.enemy = true; //declare this ogject as an enemy to the player, can add more attributes like damage, health, etc later
 
     }
