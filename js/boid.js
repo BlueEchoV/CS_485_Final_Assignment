@@ -44,15 +44,15 @@ class Boid{
     }
 	
 	edges(width, height) {
-		if (this.x > width + 50) {
-			this.x = -50;
-		} else if (this.x < -50) {
-			this.x = width + 50;
+		if (this.x > width) {
+			this.x = -this.sprite_json[this.root_e][this.state][this.cur_frame]['w'];
+		} else if (this.x < -this.sprite_json[this.root_e][this.state][this.cur_frame]['w']) {
+			this.x = width;
 		}
-		if (this.y > height + 50) {
-			this.y = -50;
-		} else if (this.y < -50) {
-			this.y = height + 50;
+		if (this.y > height ) {
+			this.y = -this.sprite_json[this.root_e][this.state][this.cur_frame]['h'];
+		} else if (this.y < -this.sprite_json[this.root_e][this.state][this.cur_frame]['h']) {
+			this.y = height 
 		}
 	}
 	
