@@ -11,12 +11,12 @@
 <script src="js/boss.js"></script>
 <script src="js/ant.js"></script>
 
-
 </head>
 <body style="">
     <canvas id='mycanvas' style="" onmousemove="coordinate(event)"></canvas>
     <div id="points">Score:</div>
     <div id="game_text">GAME OVER
+    <div id="game_text">Firefly Rumble
 
         <button class = "main_button" id="but_restart" onclick="restartgame();">restart</button>
     </div>
@@ -24,10 +24,12 @@
 <script>
 	var test_Bool = false;
 
+    var font = "Garamond";
+
     const canvas = document.querySelector("canvas");
     const sprites_to_draw = new Array(2); 
     var draw_loop_timeout;
-    var img = new Image();
+    var menu_Img = new Image();
     var firefly_Img = new Image();
     /*
     const up_arrow = 38;
@@ -95,11 +97,12 @@
     sprites_to_draw[0] = new Array(0); //background and 
     sprites_to_draw[1] = new Array(0); //forground
 
+    var current_Game_State = "Menu";
+
 	load_Jsons(); 
 
 	async function load_Jsons() {
         // Load in order to the array
-        
         // Fetch Boss Data
         let response = await fetch("assets/enemy_boss_imgs/animationData.json");
         let data = await response.json();
@@ -177,13 +180,12 @@
     $( document ).ready(function() {
         console.log( "Page is now ready" );
         resize();
-        img.onload = function() {
+        menu_Img.onload = function() {
             var ctx = canvas.getContext('2d');
-            ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+            ctx.drawImage(menu_Img, 0, 0, canvas.width, canvas.height);
             ctx.fillText("test",canvas.width,canvas.height)
         };
-        img.src = 'assets/bkg_imgs/bk_1.jpg';
-        //img.src = 'assets/bkg_imgs/bk_1.jpg';
+        menu_Img.src = 'assets/bkg_imgs/bkg_Potential_Menu_1.jpg';
 
         setTimeout(() => {
             requestAnimationFrame(draw_loop);
@@ -247,61 +249,67 @@
         
     };
 
-    function draw_loop(){
-        if(gameover == false){
-        last_Time = current_Time;
-        current_Time = Date.now();
-        delta_Time = current_Time - last_Time;
-        
-        var background_length = sprites_to_draw[0].length;
-        var forground_length  = sprites_to_draw[1].length;
-        var has_background_changed = false;
-        
-        //Draw background sprites
-        for(var i = 0; i < background_length; i++){
-            has_background_changed = sprites_to_draw[0][i].draw();
-        }
+    function display_Menu() {
+        draw_Text_Centered("Firefly Rumble", ((canvas.height / 10) * 3.5), "bold 128px " + font, "Orange");
+    }
 
-        var ctx = canvas.getContext('2d');
-		ctx.clearRect(0, 0, canvas.width, canvas.height);
-		// ctx.globalCompositeOperation = 'destination-over';
-		ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
-       
-	   //Draw forground sprites
-        for(var sprite of sprites_to_draw[1]){
-			if (test_Bool === false) {
-				console.log("Drawing: ", sprite);
-			}
-            if (typeof sprite.flock === "function") { 
-                sprite.edges(canvas.width,canvas.height);
-                sprite.draw({ 'foreground_sprites' : sprites_to_draw[1]
-                                        });
-                sprite.flock(sprites_to_draw[1]);
-            } else {
-				// This is a dictionary that is passed
-				// This is so these values are accessable inside the .js class
-				// Key / Value pair 
-                sprite.draw( { 'has_background_changed' : has_background_changed,
-                                          'key_change' : key_change,
-                                          'key_press' : key_press,
-                                          'foreground_sprites' : sprites_to_draw[1],
-                                          'mouse_coords' : {'x' : mouse_x, 'y' : mouse_y},
-                                          'rock_data' : rock_data,
-                                          // For the sprite.js rock casting
-                                          'delta_Time' : delta_Time,
-                                          'spacebar_Pressed' : spacebar_Pressed,
-                                          'firefly_count' : firefly_count
-                                        }
-            );
-                if(sprite.constructor.name == "Sprite"){
-                    level_logic(sprite);
+    function draw_loop(){
+        if (current_Game_State == "Menu") {
+            display_Menu();
+        }
+        else if(current_Game_State == "Gameloop"){
+            last_Time = current_Time;
+            current_Time = Date.now();
+            delta_Time = current_Time - last_Time;
+            
+            var background_length = sprites_to_draw[0].length;
+            var forground_length  = sprites_to_draw[1].length;
+            var has_background_changed = false;
+            
+            //Draw background sprites
+            for(var i = 0; i < background_length; i++){
+                has_background_changed = sprites_to_draw[0][i].draw();
+            }
+
+            var ctx = canvas.getContext('2d');
+    		ctx.clearRect(0, 0, canvas.width, canvas.height);
+    		// ctx.globalCompositeOperation = 'destination-over';
+    		ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+           
+    	   //Draw forground sprites
+            for(var sprite of sprites_to_draw[1]){
+    			if (test_Bool === false) {
+    				console.log("Drawing: ", sprite);
+    			}
+                if (typeof sprite.flock === "function") { 
+                    sprite.edges(canvas.width,canvas.height);
+                    sprite.draw({ 'foreground_sprites' : sprites_to_draw[1]
+                                            });
+                    sprite.flock(sprites_to_draw[1]);
+                } else {
+    				// This is a dictionary that is passed
+    				// This is so these values are accessable inside the .js class
+    				// Key / Value pair 
+                    sprite.draw( { 'has_background_changed' : has_background_changed,
+                                              'key_change' : key_change,
+                                              'key_press' : key_press,
+                                              'foreground_sprites' : sprites_to_draw[1],
+                                              'mouse_coords' : {'x' : mouse_x, 'y' : mouse_y},
+                                              'rock_data' : rock_data,
+                                              // For the sprite.js rock casting
+                                              'delta_Time' : delta_Time,
+                                              'spacebar_Pressed' : spacebar_Pressed,
+                                              'firefly_count' : firefly_count
+                                            }
+                );
+                    if(sprite.constructor.name == "Sprite"){
+                        level_logic(sprite);
+                    }
                 }
             }
+            test_Bool = true;
+            requestAnimationFrame(draw_loop);
         }
-
-        test_Bool = true;
-        requestAnimationFrame(draw_loop);
-    }
 
     }
 
