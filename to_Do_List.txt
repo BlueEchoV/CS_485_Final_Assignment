@@ -31,7 +31,6 @@ TODO List:
 			position within a range)
 		- DONE (Sort of): Get ants spawning (Outside of map bounds)
 			- Spawning enemies towards the player
-		- DONE: Space bar moves the screen down (annoying)
 		- TODO: Ammo system (Like in my game)
 			- Ammo recharges and the player can spray the rocks / bullets out if they want to
 		- TODO: Menu System
@@ -39,7 +38,7 @@ TODO List:
 			- Reset game states
 		- TODO: Death animations for ants, spider, ladybug
 			- When enemies die, play it
-		
+
 		- TODO: Multiple characters? Guy and a girl? Different weapons for both?
 			- Guy throws a boulder to crush enemies
 				- Goes through small units
@@ -58,6 +57,7 @@ TODO List:
 		- Images not based off the screen size (Many bugs)
 	
 	Michael B
+		- DONE: Space bar moves the screen down (annoying)
 		- Remove black margin
 		- Animations
 		- Level logic

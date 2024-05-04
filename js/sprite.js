@@ -14,8 +14,6 @@ class Sprite {
         this.x_v = 0;
         this.y_v = 0;
 
-        this.projectile_speed = 10;
-
         this.set_v = 5;
 
         this.idle = false;
@@ -24,6 +22,7 @@ class Sprite {
 
         this.points = 0;
 
+        this.projectile_speed = 12;
         this.ammo = 0;
         // Milliseconds
         this.ammo_CD = 750;

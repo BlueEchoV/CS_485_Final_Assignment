@@ -296,7 +296,18 @@
         requestAnimationFrame(draw_loop);
     }
 
-    
+    function draw_Text_Centered(text, y, font, color) {
+        var ctx = canvas.getContext('2d');
+        ctx.fillStyle = color; 
+        ctx.font = font;
+        // console.log("Current selected font: ", ctx.font);
+
+        var textWidth = ctx.measureText(text).width;
+        var x = (canvas.width - textWidth) / 2;
+
+        ctx.fillText(text, x, y);
+    }
+
 
     function resize(){
         canvas.width = window.innerWidth;
@@ -322,53 +333,52 @@
     var spider_speed = 1;
     function level_logic(sprite){
 
-            // delta time
-            elapsed = new Date() - start;
+        // delta time
+        elapsed = new Date() - start;
 
+        //On level up, once at start of level
+        if(level_up == true){
+            console.log("level:" + level);
+            random_background(); //change background
 
-            //On level up, once at start of level
-            if(level_up == true){
-                console.log("level:" + level);
-                random_background(); //change background
+            firefly_count *= 1.1;//increase firefly count by 10% each level
+            spider_speed *= 1.1; //increase speed of spider by 10% each level
+            spider_scale = Math.ceil(level/3); //quantity of spiders spawning per wave
+            frequency = 5; //seconds between spawning spiders
 
-                firefly_count *= 1.1;//increase firefly count by 10% each level
-                spider_speed *= 1.1; //increase speed of spider by 10% each level
-                spider_scale = Math.ceil(level/3); //quantity of spiders spawning per wave
-                frequency = 5; //seconds between spawning spiders
-
-                //spawn fireflies
-                for(let i=0;i<firefly_count;i++){
-                    sprites_to_draw[1].push( new Boid(firefly_data, "idle") );
-                }
-
-                //spawn ants
-                for(let i=0;i<firefly_count;i++){
-                    sprites_to_draw[1].push( new Ant(ant_data, "walk_E") );
-                }
-
-                //do this only once per level up
-                level_up = false;
+            //spawn fireflies
+            for(let i=0;i<firefly_count;i++){
+                sprites_to_draw[1].push( new Boid(firefly_data, "idle") );
             }
 
-            //spider spawning logic
-            if(Math.floor(elapsed/1000) % frequency == 0){
-                if(spawn){
-                    for(let i=0;i<spider_scale;i++){
-                        sprites_to_draw[1].push( new spider(spider_data, "walk_E", spider_speed) );
-                    }
-                    
-                }
-                spawn = false;
-            } else {
-                spawn = true;
+            //spawn ants
+            for(let i=0;i<firefly_count;i++){
+                sprites_to_draw[1].push( new Ant(ant_data, "walk_E") );
             }
 
-            //Check if it's time to level up
-            if(sprite.points >= firefly_count){
-                sprite.points = 0;
-                level_up = true;
-                level +=1;
+            //do this only once per level up
+            level_up = false;
+        }
+
+        //spider spawning logic
+        if(Math.floor(elapsed/1000) % frequency == 0){
+            if(spawn){
+                for(let i=0;i<spider_scale;i++){
+                    sprites_to_draw[1].push( new spider(spider_data, "walk_E", spider_speed) );
+                }
+                
             }
+            spawn = false;
+        } else {
+            spawn = true;
+        }
+
+        //Check if it's time to level up
+        if(sprite.points >= firefly_count){
+            sprite.points = 0;
+            level_up = true;
+            level +=1;
+        }
                 
     }
 
