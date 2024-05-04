@@ -14,8 +14,15 @@
 
 </head>
 <body style="">
-<canvas id='mycanvas' style="" onmousemove="coordinate(event)">
-</canvas>
+    <canvas id='mycanvas' style="" onmousemove="coordinate(event)"></canvas>
+    <div id="points">Score:</div>
+    <div id="game_text">GAME OVER
+
+        <button class = "main_button" id="but_restart" onclick="restartgame();">restart</button>
+    </div>
+    
+
+
 
 
 <script>
@@ -69,12 +76,21 @@
     //for spacebar
     var pressed = false;
 
-    //
+    //Json Data
     var rock_data = null;
     var boss_data = null;
     var spider_data = null;
     var firefly_data = null;
     var player_data = null;
+
+    //Level up logic
+    var spawn = true;
+    var firefly_count = 10;
+    var level_up = true;
+    var frequency = 5;
+    var spider_scale = 1;
+    var spider_speed = 1;
+    var gameover = false;
     
     sprites_to_draw[0] = new Array(0); //background and 
     sprites_to_draw[1] = new Array(0); //forground
@@ -171,6 +187,7 @@
         img.onload = function() {
             var ctx = canvas.getContext('2d');
             ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+            ctx.fillText("test",canvas.width,canvas.height)
         };
         img.src = 'assets/bkg_imgs/bk_1.jpg';
         //img.src = 'assets/bkg_imgs/bk_1.jpg';
@@ -183,104 +200,107 @@
     window.addEventListener('resize', resize);
 
     function draw_loop(){
-        var background_length = sprites_to_draw[0].length;
-        var forground_length  = sprites_to_draw[1].length;
-        var has_background_changed = false;
+        if(gameover == false){
+            var background_length = sprites_to_draw[0].length;
+            var forground_length  = sprites_to_draw[1].length;
+            var has_background_changed = false;
+            
+            //Draw background sprites
+            for(var i = 0; i < background_length; i++){
+                has_background_changed = sprites_to_draw[0][i].draw();
+            }
+
+            document.body.onkeydown = function(e){
+                
+                if(e.keyCode == up_arrow){
+                    key_change = true;
+                    key_press["UP"] = e.keyCode;
+                } 
+                if(e.keyCode == right_arrow){
+                    //alert(String.fromCharCode(e.keyCode)+" --> "+e.keyCode);
+                    key_change = true;
+                    key_press["RIGHT"] = e.keyCode;
+                }
+                if(e.keyCode == left_arrow){
+                    key_change = true;
+                    key_press["LEFT"] = e.keyCode;
+                }
+                if(e.keyCode == down_arrow){
+                    key_change = true;
+                    key_press["DOWN"] = e.keyCode;
+                }
+                if(e.keyCode == space_bar){
+                    e.preventDefault()
+                    if(!pressed)
+                        key_press["SPACE_BAR"] = e.keyCode;
+                    pressed = true;
+                }
+                
+            
+            };
+            document.body.onkeyup = function(e){
+                //alert(e.keyCode);
+                
+                if(key_press["UP"] == e.keyCode){
+                    key_press["UP"] = null;
+                }
+                if(key_press["RIGHT"] == e.keyCode){
+                    key_press["RIGHT"] = null;
+                }
+                if(key_press["LEFT"] == e.keyCode){
+                    key_press["LEFT"] = null;
+                }
+                if(key_press["DOWN"] == e.keyCode){
+                    key_press["DOWN"] = null;
+                }
+
+                if(e.keyCode == space_bar){
+                    key_press["SPACE_BAR"] = null;
+                    pressed = false;
+                }
+
+                if(key_press["UP"] == null && key_press["RIGHT"] == null && key_press["LEFT"] == null && key_press["DOWN"] == null){
+                    key_change = false;
+                }
+                
+            };
+            
+            var ctx = canvas.getContext('2d');
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            // ctx.globalCompositeOperation = 'destination-over';
+            ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
         
-        //Draw background sprites
-        for(var i = 0; i < background_length; i++){
-            has_background_changed = sprites_to_draw[0][i].draw();
-        }
-
-        document.body.onkeydown = function(e){
-            
-            if(e.keyCode == up_arrow){
-                key_change = true;
-                key_press["UP"] = e.keyCode;
-            } 
-            if(e.keyCode == right_arrow){
-                //alert(String.fromCharCode(e.keyCode)+" --> "+e.keyCode);
-                key_change = true;
-                key_press["RIGHT"] = e.keyCode;
-            }
-            if(e.keyCode == left_arrow){
-                key_change = true;
-                key_press["LEFT"] = e.keyCode;
-            }
-            if(e.keyCode == down_arrow){
-                key_change = true;
-                key_press["DOWN"] = e.keyCode;
-            }
-            if(e.keyCode == space_bar){
-                e.preventDefault()
-                if(!pressed)
-                    key_press["SPACE_BAR"] = e.keyCode;
-                pressed = true;
-            }
-            
-        
-        };
-        document.body.onkeyup = function(e){
-            //alert(e.keyCode);
-            
-            if(key_press["UP"] == e.keyCode){
-                key_press["UP"] = null;
-            }
-            if(key_press["RIGHT"] == e.keyCode){
-                key_press["RIGHT"] = null;
-            }
-            if(key_press["LEFT"] == e.keyCode){
-                key_press["LEFT"] = null;
-            }
-            if(key_press["DOWN"] == e.keyCode){
-                key_press["DOWN"] = null;
-            }
-
-            if(e.keyCode == space_bar){
-                key_press["SPACE_BAR"] = null;
-                pressed = false;
-            }
-
-            if(key_press["UP"] == null && key_press["RIGHT"] == null && key_press["LEFT"] == null && key_press["DOWN"] == null){
-                key_change = false;
-            }
-            
-        };
-		
-        var ctx = canvas.getContext('2d');
-		ctx.clearRect(0, 0, canvas.width, canvas.height);
-		// ctx.globalCompositeOperation = 'destination-over';
-		ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
-       
-	   //Draw forground sprites
-        for(var sprite of sprites_to_draw[1]){
-			if (test_Bool === false) {
-				console.log("Drawing: ", sprite);
-			}
-            if (typeof sprite.flock === "function") { 
-                sprite.edges(canvas.width,canvas.height);
-                sprite.draw({ 'foreground_sprites' : sprites_to_draw[1]
-                                        });
-                sprite.flock(sprites_to_draw[1]);
-            } else {
-				// This is a dictionary that is passed
-				// This is so these values are accessable inside the .js class
-				// Key / Value pair 
-                sprite.draw( { 'has_background_changed' : has_background_changed,
-                                          'key_change' : key_change,
-                                          'key_press' : key_press,
-                                          'foreground_sprites' : sprites_to_draw[1],
-                                          'mouse_coords' : {'x' : mouse_x, 'y' : mouse_y},
-                                          'rock_data' : rock_data
-                                        }
-            );
-                if(sprite.constructor.name == "Sprite"){
-                    level_logic(sprite);
+        //Draw forground sprites
+            for(var sprite of sprites_to_draw[1]){
+                if (test_Bool === false) {
+                    console.log("Drawing: ", sprite);
+                }
+                if (typeof sprite.flock === "function") { 
+                    sprite.edges(canvas.width,canvas.height);
+                    sprite.draw({ 'foreground_sprites' : sprites_to_draw[1]
+                                            });
+                    sprite.flock(sprites_to_draw[1]);
+                } else {
+                    // This is a dictionary that is passed
+                    // This is so these values are accessable inside the .js class
+                    // Key / Value pair 
+                    sprite.draw( { 'has_background_changed' : has_background_changed,
+                                            'key_change' : key_change,
+                                            'key_press' : key_press,
+                                            'foreground_sprites' : sprites_to_draw[1],
+                                            'mouse_coords' : {'x' : mouse_x, 'y' : mouse_y},
+                                            'rock_data' : rock_data,
+                                            'firefly_count' : firefly_count
+                                            }
+                );
+                    if(sprite.constructor.name == "Sprite"){
+                        level_logic(sprite);
+                    }
                 }
             }
+            test_Bool = true;
+            requestAnimationFrame(draw_loop);
         }
-        test_Bool = true;
-        requestAnimationFrame(draw_loop);
     }
 
     
@@ -301,12 +321,7 @@
         mouse_y = event.clientY;
     }
 
-    var spawn = true;
-    var firefly_count = 10;
-    var level_up = true;
-    var frequency = 5;
-    var spider_scale = 1;
-    var spider_speed = 1;
+    
     function level_logic(sprite){
             
             
@@ -316,15 +331,16 @@
 
             //On level up, once at start of level
             if(level_up == true){
+                
                 console.log("level:" + level);
                 random_background(); //change background
 
-                firefly_count *= 1.1;//increase firefly count by 10% each level
-                spider_speed *= 1.1; //increase speed of spider by 10% each level
+                firefly_count = Math.ceil(firefly_count*1.1);//increase firefly count by 10% each level
+                //spider_speed *= 1.1; //increase speed of spider by 10% each level
                 spider_scale = Math.ceil(level/3); //quantity of spiders spawning per wave
                 frequency = 5; //seconds between spawning spiders
 
-
+                $("#points").text("Score: 0/" + firefly_count);
 
                 //spawn fireflies
                 for(let i=0;i<firefly_count;i++){
@@ -336,15 +352,9 @@
                     sprites_to_draw[1].push( new Ant(ant_data, "walk_E") );
                 }
 
-                
-
-
                 //do this only once per level up
                 level_up = false;
             }
-
-
-
 
             //spider spawning logic
             if(Math.floor(elapsed/1000) % frequency == 0){
@@ -364,6 +374,14 @@
                 sprite.points = 0;
                 level_up = true;
                 level +=1;
+                
+            }
+
+            //Check if game over
+            if(sprite.gameover == true){
+                gameover = true;
+                $("#game_text").show();
+                $("#but_restart").show();
             }
                 
     }
@@ -373,6 +391,10 @@
 
 
         img.src = 'assets/bkg_imgs/bk_' + random + '.jpg';
+    }
+
+    function restartgame(){
+        location.reload();
     }
 </script>
 

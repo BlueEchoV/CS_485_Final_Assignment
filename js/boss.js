@@ -16,12 +16,38 @@ class Boss{
 
         this.count = 1;
 
-        this.x = this.random_pos_x();
-        this.y = this.random_pos_y();
+        this.x = 0;
+        this.y = 0;
+        this.random_Off_Screen_Spawn_Position();
 
         this.enemy = true; //declare this ogject as an enemy to the player, can add more attributes like damage, health, etc later
 
     }
+
+    random_Off_Screen_Spawn_Position() {
+		// Generate a random zone to spawn the enemy in
+		var zone = 4 * Math.random();
+		
+		// North
+		if (zone < 1) {
+			this.x = Math.random() * window.innerWidth;
+			// inverted coordinate systemm
+			this.y = -this.sprite_json[this.root_e][this.state][this.cur_frame]['w'];
+		// South
+		} else if (zone >= 1 && zone < 2) {
+			this.x = Math.random() * window.innerWidth;
+			this.y = 0;
+		// East
+		} else if (zone >= 2 && zone < 3) {
+			this.x = window.innerWidth;
+			this.y = Math.random() * window.innerHeight;
+		// West
+		} else {
+			// Spawn the enemy off screen if it spawns in the west
+			this.x = -this.sprite_json[this.root_e][this.state][this.cur_frame]['w'];
+			this.y = Math.random() * window.innerHeight;
+		}
+	}
 
     draw(state){
         var ctx = canvas.getContext('2d');

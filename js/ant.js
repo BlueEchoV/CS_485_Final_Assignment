@@ -331,9 +331,9 @@ class Ant{
         //Change animation correlated to the direction we're moving
 
         if(this.x_v > 0){
-            this.state = "walk_W";
-        }else if(this.x_v < 0){
             this.state = "walk_E";
+        }else if(this.x_v < 0){
+            this.state = "walk_W";
 		}
 
 

@@ -1,0 +1,84 @@
+Game Design Document
+	Theme:
+		- Forest theme
+	Win condition:
+		- Player catches all the fire flys
+	Lose condition:
+		- Player gets killed by the enemies
+	Player: 
+		- Can throw rocks at enemies
+		- Unlimited rocks
+		- The player has one life
+	Enemies:
+		- Enemies spawn more frequently as the time goes on
+		- ALL ENEMIES ONE SHOT THE PLAYER
+		- Large enemies (Spider)
+		- Small enemies (Ants)
+		- Maybe a ranged enemy (Bee shooting stingers)
+	Fireflys
+		- The score system/win condition
+		- These are the boids in the background that the player can collect
+		
+TODO List:
+	Michael P
+		- DONE: BUG: Overlapping images
+			- DONE: BUG: Player smearing
+		- DONE: Create more background sprites
+		- DONE: Rock exploding on hit 
+		- DONE: Finish moving animations
+		- DONE: BUG: Have the spider / lady bug spawn at the edge of the map
+			- Have them spawn their width outside of the boundary and walk towards the player. (Could be a random 
+			position within a range)
+		- DONE (Sort of): Get ants spawning (Outside of map bounds)
+			- Spawning enemies towards the player
+		- TODO: Space bar moves the screen down (annoying)
+		- TODO: Ammo system (Like in my game)
+			- Ammo recharges and the player can spray the rocks / bullets out if they want to
+		- TODO: Menu System
+		- TODO: Insta death
+			- Reset game states
+		- TODO: Multiple characters? Guy and a girl? Different weapons for both?
+			- Guy throws a boulder to crush enemies
+				- Goes through small units
+			- Girl could have a 'crossbow' that shoots fast. 
+				- Doesn't go through units buit shoots very fast 	
+		- IDEA: Instead of a rock, have it be like a gun that shoots light or a ray gun thing and that effect gets stronger the 
+		more fireflies you have. That could be really cool. Cat and mouse effect.
+		- TODO: Death animations for ants, spider, ladybug
+			- When enemies die, play it
+		- TODO: The image sizes aren't based off the screen size (Problem)
+			- Changing this would affect the speed of the units as well (Problem)
+			- We could just enfore that the screen be a certain size?
+			- Or change it but that would be a problem
+			- If we have the size be variable on the images, then we would need to scale the speed as well. 
+			- This gets chaotic quick
+			- Player could pick a resolution on load?
+	Extra Bugs:
+		- Images not based off the screen size (Many bugs)
+	
+	Michael B
+		- Remove black margin
+		- Animations
+		- Level logic
+			- Level image generates a random image when you press "Next Level"
+			- Mulipliers (In the classes)
+				Player
+					(Maybe)
+						- Button: Firerate +10%
+						- Button: Speed +10%
+				Enemies
+				- Apart of the class (HP and Damage are CONST)
+					- Spawn rate and maybe speed increase (caution)?
+			- Scoring system (Picking up the fireflys) 0 / 50
+			- Boss fight (Ever second round)
+				- Think about boss mechanics 
+			- Buttons
+				- Next level: Weapon +10% Enemies +10% spawnrate
+				- Game over: Red text "Game Over"
+		- Collision Logic
+			- Rock only dies when it hits a large enemy
+		- Ants - Boids - Could make the variables stronger
+		- Collision with the rock and the enemies
+
+Extra Todos
+- sound?

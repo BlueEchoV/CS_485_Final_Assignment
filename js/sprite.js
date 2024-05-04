@@ -1,3 +1,4 @@
+
 class Sprite {
     constructor(sprite_json, x, y, start_state){
         // console.log("yo");
@@ -23,6 +24,8 @@ class Sprite {
         this.count = 1;
 
         this.points = 0;
+
+        this.gameover = false;
     }
 
     draw(state){
@@ -107,7 +110,7 @@ class Sprite {
             }
         }
 
-        this.detect_collision(state['foreground_sprites']);
+        this.detect_collision(state['foreground_sprites'], state['firefly_count']);
 
         return false;
         
@@ -163,7 +166,7 @@ class Sprite {
             }
     }
 
-    detect_collision(others){
+    detect_collision(others, firefly_count){
        for(var i = 0; i < others.length; i++){
             //Check if collided with any sprites
             if( this.x <= (others[i].x + others[i].sprite_json[others[i].root_e][others[i].state][others[i].cur_frame]['w']) &&
@@ -173,11 +176,13 @@ class Sprite {
                     
                     //If collided with enemy spider
                     if(others[i].enemy){
+                        this.gameover = true;
                         // console.log("you died LOL");
                     }
                     if(others[i].constructor.name == "Boid"){
                         others.splice(i, 1);
                         this.points += 1;
+                        $("#points").text("Score: " + this.points + "/" + firefly_count);
                     }
             }
         }
