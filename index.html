@@ -14,13 +14,19 @@
 </head>
 <body style="">
     <canvas id='mycanvas' style="" onmousemove="coordinate(event)"></canvas>
+
+    <div id="game">
+    <div id="stat_container">
     <div id="points">Score:</div>
-    <div id="game_text">GAME OVER
-    <div id="game_text">Firefly Rumble
+    <div id="ammo">Ammo:</div>
+    </div>
+    
+    <div class = "game_text" id="gameOver_text">GAME OVER
 
         <button class = "main_button" id="but_restart" onclick="restartgame();">restart</button>
     </div>
-
+    <div class = "game_text" id="levelUp_text">LEVEL </div>
+    </div>
 <script>
 	var test_Bool = false;
 
@@ -349,8 +355,14 @@
 
             //On level up, once at start of level
             if(level_up == true){
+
+                //Show level up text
+                $("#levelUp_text").css('animation', 'none');
+                $("#levelUp_text")[0].offsetHeight; 
+                $("#levelUp_text").css('animation', '');
+                $("#levelUp_text").text("LEVEL " + level);
+                $("#levelUp_text").show().css('animation', 'fadeInOut 10s');
                 
-                console.log("level:" + level);
                 random_background(); //change background
 
                 firefly_count = Math.ceil(firefly_count*1.1);//increase firefly count by 10% each level
@@ -398,7 +410,7 @@
             //Check if game over
             if(sprite.gameover == true){
                 gameover = true;
-                $("#game_text").show();
+                $("#gameOver_text").show();
                 $("#but_restart").show();
             }
 
