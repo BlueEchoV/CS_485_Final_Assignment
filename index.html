@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
+<link rel="stylesheet" href="styles.css">
 <script src="https://code.jquery.com/jquery-3.7.1.js" integrity="sha256-eKhayi8LEQwp4NKxN+CfCh+3qOVUtJn3QNZ0TciWLP4=" crossorigin="anonymous"></script>
 
 <script src="js/sprite.js"></script>
@@ -8,6 +9,7 @@
 <script src="js/boid.js"></script>
 <script src="js/projectile.js"></script>
 <script src="js/boss.js"></script>
+<script src="js/ant.js"></script>
 
 
 </head>
@@ -36,6 +38,9 @@
     const right_arrow = 68;
     const space_bar = 32;
 
+    var level = 1;
+    var start = new Date();
+
     var mouse_x;
     var mouse_y;
 
@@ -46,6 +51,9 @@
     const spider_states = ["walk_E","walk_W"];
     const boss_states = ["walk_E","walk_W"];
     const rock_states = ["move"];
+    const ant_states = ["walk_E","walk_W"];
+
+    const background_images = ["bk_1","bk_2","bk_3"];
     
 
     var key_change = false;
@@ -63,6 +71,10 @@
 
     //
     var rock_data = null;
+    var boss_data = null;
+    var spider_data = null;
+    var firefly_data = null;
+    var player_data = null;
     
     sprites_to_draw[0] = new Array(0); //background and 
     sprites_to_draw[1] = new Array(0); //forground
@@ -70,62 +82,86 @@
 	load_Jsons(); 
 
 	async function load_Jsons() {
-		// Preload Boss
-		const bossData = await $.getJSON("assets/enemy_boss_imgs/animationData.json");
-			for (let i = 0; i < boss_states.length; i++) {
-				for (let j = 0; j < bossData["boss"][boss_states[i]].length; j++) {
-					console.log("loading boss data");
-					bossData["boss"][boss_states[i]][j]['img'] = new Image();
-					bossData["boss"][boss_states[i]][j]['img'].src = 'assets/enemy_boss_imgs/' + boss_states[i] + '/' + j + '.png';
+		//Preload Boss
+		$.getJSON( "assets/enemy_boss_imgs/animationData.json", function( data ) {
+				
+				for(var i = 0;i< boss_states.length;i++){
+					for(var j = 0; j < data["boss"][boss_states[i]].length; j++){
+						console.log("loading spider data");
+						data["boss"][boss_states[i]][j]['img'] = new Image();
+						data["boss"][boss_states[i]][j]['img'].src = 'assets/enemy_boss_imgs/' + boss_states[i] + '/' + j + '.png';
+					}
 				}
-			}
-		sprites_to_draw[1].push(new Boss(bossData, "walk_E"));
+            sprites_to_draw[1].push( new Boss(data, "walk_E") );
+            boss_data = data;
+		});
 
-		// Preload Spider
-		const spiderData = await $.getJSON("assets/enemy_spider_imgs/animationData.json");
-			for (let i = 0; i < spider_states.length; i++) {
-				for (let j = 0; j < spiderData["spider"][spider_states[i]].length; j++) {
-					console.log("loading spider data");
-					spiderData["spider"][spider_states[i]][j]['img'] = new Image();
-					spiderData["spider"][spider_states[i]][j]['img'].src = 'assets/enemy_spider_imgs/' + spider_states[i] + '/' + j + '.png';
-				}
-			}
-		sprites_to_draw[1].push(new spider(spiderData, "walk_E"));
+		//Preload Spider
+		$.getJSON( "assets/enemy_spider_imgs/animationData.json", function( data ) {
+				
+					for(var i = 0;i< spider_states.length;i++){
+						for(var j = 0; j < data["spider"][spider_states[i]].length; j++){
+							console.log("loading spider data");
+							data["spider"][spider_states[i]][j]['img'] = new Image();
+							data["spider"][spider_states[i]][j]['img'].src = 'assets/enemy_spider_imgs/' + spider_states[i] + '/' + j + '.png';
+						}
+					}
+            spider_data = data;
+			//sprites_to_draw[1].push( new spider(data, "walk_E") );
+		});
 
 		//Preload Player
-		const playerData = await $.getJSON( "assets/player_imgs/animationData.json");
-			for(var i = 0;i< player_states.length;i++){
-				for(var j = 0; j < playerData["player"][player_states[i]].length; j++) {
-					console.log("loading player data");
-					playerData["player"][player_states[i]][j]['img'] = new Image();
-					playerData["player"][player_states[i]][j]['img'].src = 'assets/player_imgs/' + player_states[i] + '/' + j + '.png';
-				}
-			}
-		sprites_to_draw[1].push( new Sprite(playerData, 150 ,600, "idle") );
+		$.getJSON( "assets/player_imgs/animationData.json", function( data ) {
+				
+					for(var i = 0;i< player_states.length;i++){
+						for(var j = 0; j < data["player"][player_states[i]].length; j++){
+							console.log("loading player data");
+							data["player"][player_states[i]][j]['img'] = new Image();
+							data["player"][player_states[i]][j]['img'].src = 'assets/player_imgs/' + player_states[i] + '/' + j + '.png';
+						}
+					}
+			sprites_to_draw[1].push( new Sprite(data, 150 ,600, "idle") );
+		});
 
 		//Preload firefly
-		const fireflyData = await $.getJSON("assets/firefly_imgs/animationData.json");
-			for(var i = 0;i< firefly_states.length;i++) {
-						for(var j = 0; j < fireflyData["firefly"][firefly_states[i]].length; j++) {
+		$.getJSON( "assets/firefly_imgs/animationData.json", function( data ) {
+			for(var i = 0;i< firefly_states.length;i++){
+						for(var j = 0; j < data["firefly"][firefly_states[i]].length; j++){
 							console.log("loading firefly data");
-							fireflyData["firefly"][firefly_states[i]][j]['img'] = new Image();
-							fireflyData["firefly"][firefly_states[i]][j]['img'].src = 'assets/firefly_imgs/' + firefly_states[i] + '/' + j + '.png';
+							data["firefly"][firefly_states[i]][j]['img'] = new Image();
+							data["firefly"][firefly_states[i]][j]['img'].src = 'assets/firefly_imgs/' + firefly_states[i] + '/' + j + '.png';
 						}
-				for(var i = 0; i < 100;i++) {
-					sprites_to_draw[1].push( new Boid(fireflyData, "idle") );
-				}
 			}
+			
+            firefly_data = data;
+			
+		});
+
+        //Preload ant
+		$.getJSON( "assets/enemy_ant_imgs/animationData.json", function( data ) {
+			for(var i = 0;i< ant_states.length;i++){
+						for(var j = 0; j < data["ant"][ant_states[i]].length; j++){
+							console.log("loading ant data");
+							data["ant"][ant_states[i]][j]['img'] = new Image();
+							data["ant"][ant_states[i]][j]['img'].src = 'assets/enemy_ant_imgs/' + ant_states[i] + '/' + j + '.png';
+						}
+			}
+			
+            ant_data = data;
+			
+		});
 
 		//Preload rock
-		const rockData = await $.getJSON( "assets/rock_imgs/animationData.json");
+		$.getJSON( "assets/rock_imgs/animationData.json", function( data ) {
 			for(var i = 0;i< rock_states.length;i++){
-						for(var j = 0; j < rockData["rock"][rock_states[i]].length; j++) {
+						for(var j = 0; j < data["rock"][rock_states[i]].length; j++){
 							console.log("loading rock data");
-							rockData["rock"][rock_states[i]][j]['img'] = new Image();
-							rockData["rock"][rock_states[i]][j]['img'].src = 'assets/rock_imgs/' + rock_states[i] + '/' + j + '.png';
+							data["rock"][rock_states[i]][j]['img'] = new Image();
+							data["rock"][rock_states[i]][j]['img'].src = 'assets/rock_imgs/' + rock_states[i] + '/' + j + '.png';
 						}
 			}
-			rock_data = rockData;
+			rock_data = data;
+		});
 	}
 
     $( document ).ready(function() {
@@ -136,16 +172,8 @@
             var ctx = canvas.getContext('2d');
             ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
         };
-
-		// Random background spawns
-		var random_Bkg = Math.random() * 3;
-		if (random_Bkg < 1) {
-			img.src = 'assets/bkg_imgs/bk_1.jpg';
-		} else if (random_Bkg >= 1 && random_Bkg < 2) {
-			img.src = 'assets/bkg_imgs/bk_2.jpg';
-		} else if (random_Bkg >= 2 && random_Bkg < 3) {
-			img.src = 'assets/bkg_imgs/bk_3.jpg';
-		}
+        img.src = 'assets/bkg_imgs/bk_1.jpg';
+        //img.src = 'assets/bkg_imgs/bk_1.jpg';
 
         setTimeout(() => {
             requestAnimationFrame(draw_loop);
@@ -184,6 +212,7 @@
                 key_press["DOWN"] = e.keyCode;
             }
             if(e.keyCode == space_bar){
+                e.preventDefault()
                 if(!pressed)
                     key_press["SPACE_BAR"] = e.keyCode;
                 pressed = true;
@@ -224,20 +253,20 @@
 		ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
        
 	   //Draw forground sprites
-        for(var sprites of sprites_to_draw[1]){
+        for(var sprite of sprites_to_draw[1]){
 			if (test_Bool === false) {
-				console.log("Drawing: ", sprites);
+				console.log("Drawing: ", sprite);
 			}
-            if (typeof sprites.flock === "function") { 
-                sprites.edges(canvas.width,canvas.height);
-                sprites.draw({ 'foreground_sprites' : sprites_to_draw[1]
+            if (typeof sprite.flock === "function") { 
+                sprite.edges(canvas.width,canvas.height);
+                sprite.draw({ 'foreground_sprites' : sprites_to_draw[1]
                                         });
-                sprites.flock(sprites_to_draw[1]);
+                sprite.flock(sprites_to_draw[1]);
             } else {
 				// This is a dictionary that is passed
 				// This is so these values are accessable inside the .js class
 				// Key / Value pair 
-                sprites.draw( { 'has_background_changed' : has_background_changed,
+                sprite.draw( { 'has_background_changed' : has_background_changed,
                                           'key_change' : key_change,
                                           'key_press' : key_press,
                                           'foreground_sprites' : sprites_to_draw[1],
@@ -245,6 +274,9 @@
                                           'rock_data' : rock_data
                                         }
             );
+                if(sprite.constructor.name == "Sprite"){
+                    level_logic(sprite);
+                }
             }
         }
         test_Bool = true;
@@ -267,6 +299,72 @@
     function coordinate(event) {
         mouse_x = event.clientX;
         mouse_y = event.clientY;
+    }
+
+    var spawn = true;
+    var firefly_count = 10;
+    var level_up = true;
+    var frequency = 5;
+    var spider_scale = 1;
+    var spider_speed = 1;
+    function level_logic(sprite){
+            
+            
+
+            var elapsed = new Date() - start;
+
+
+            //On level up, once at start of level
+            if(level_up == true){
+                console.log("level:" + level);
+                random_background(); //change background
+
+                firefly_count *= 1.1;//increase firefly count by 10% each level
+                spider_speed *= 1.1; //increase speed of spider by 10% each level
+                spider_scale = Math.ceil(level/3); //quantity of spiders spawning per wave
+                frequency = 5; //seconds between spawning spiders
+
+                //spawn fireflies
+                for(let i=0;i<firefly_count;i++){
+                    sprites_to_draw[1].push( new Boid(firefly_data, "idle") );
+                }
+
+                //spawn ants
+                for(let i=0;i<firefly_count;i++){
+                    sprites_to_draw[1].push( new Ant(ant_data, "walk_E") );
+                }
+
+                //do this only once per level up
+                level_up = false;
+            }
+
+            //spider spawning logic
+            if(Math.floor(elapsed/1000) % frequency == 0){
+                if(spawn){
+                    for(let i=0;i<spider_scale;i++){
+                        sprites_to_draw[1].push( new spider(spider_data, "walk_E", spider_speed) );
+                    }
+                    
+                }
+                spawn = false;
+            } else {
+                spawn = true;
+            }
+
+            //Check if it's time to level up
+            if(sprite.points >= firefly_count){
+                sprite.points = 0;
+                level_up = true;
+                level +=1;
+            }
+                
+    }
+
+    function random_background(){
+        const random = Math.ceil(Math.random() * background_images.length);
+
+
+        img.src = 'assets/bkg_imgs/bk_' + random + '.jpg';
     }
 </script>
 
