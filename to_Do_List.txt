@@ -31,7 +31,8 @@ TODO List:
 			position within a range)
 		- DONE (Sort of): Get ants spawning (Outside of map bounds)
 			- Spawning enemies towards the player
-		- TODO: Ammo system (Like in my game)
+		- TODO: Fix the spiders stuttering
+		- DONE: Ammo system (Like in my game)
 			- Ammo recharges and the player can spray the rocks / bullets out if they want to
 		- TODO: Menu System
 		- TODO: Insta death
