@@ -20,10 +20,6 @@
 
         <button class = "main_button" id="but_restart" onclick="restartgame();">restart</button>
     </div>
-    
-
-
-
 
 <script>
 	var test_Bool = false;
@@ -46,7 +42,13 @@
     const space_bar = 32;
 
     var level = 1;
+    
+    var current_Time = 0;
+    var last_Time = Date.now();;
+    var delta_Time = 0;
+
     var start = new Date();
+    var elapsed = 0;
 
     var mouse_x;
     var mouse_y;
@@ -74,9 +76,7 @@
                                 }
 
     //for spacebar
-    var pressed = false;
-
-    //Json Data
+    var spacebar_Pressed = false;
     var rock_data = null;
     var boss_data = null;
     var spider_data = null;
@@ -181,7 +181,6 @@
 	}
 
     $( document ).ready(function() {
-        
         console.log( "Page is now ready" );
         resize();
         img.onload = function() {
@@ -199,111 +198,131 @@
 
     window.addEventListener('resize', resize);
 
+    document.body.onkeydown = function(e){
+        if(e.keyCode == up_arrow){
+            key_change = true;
+            key_press["UP"] = e.keyCode;
+        } 
+        if(e.keyCode == right_arrow){
+            //alert(String.fromCharCode(e.keyCode)+" --> "+e.keyCode);
+            key_change = true;
+            key_press["RIGHT"] = e.keyCode;
+        }
+        if(e.keyCode == left_arrow){
+            key_change = true;
+            key_press["LEFT"] = e.keyCode;
+        }
+        if(e.keyCode == down_arrow){
+            key_change = true;
+            key_press["DOWN"] = e.keyCode;
+        }
+        if(e.keyCode == space_bar){
+            // Stops the scrolling
+            e.preventDefault()
+            // We wan the rocks to be spamable
+            key_press["SPACE_BAR"] = e.keyCode;
+            spacebar_Pressed = true;
+        }
+        
+    
+    };
+    document.body.onkeyup = function(e){
+        //alert(e.keyCode);
+        
+        if(key_press["UP"] == e.keyCode){
+            key_press["UP"] = null;
+        }
+        if(key_press["RIGHT"] == e.keyCode){
+            key_press["RIGHT"] = null;
+        }
+        if(key_press["LEFT"] == e.keyCode){
+            key_press["LEFT"] = null;
+        }
+        if(key_press["DOWN"] == e.keyCode){
+            key_press["DOWN"] = null;
+        }
+
+        if(e.keyCode == space_bar){
+            key_press["SPACE_BAR"] = null;
+            spacebar_Pressed = false;
+        }
+
+        if(key_press["UP"] == null && key_press["RIGHT"] == null && key_press["LEFT"] == null && key_press["DOWN"] == null){
+            key_change = false;
+        }
+        
+    };
+
     function draw_loop(){
         if(gameover == false){
-            var background_length = sprites_to_draw[0].length;
-            var forground_length  = sprites_to_draw[1].length;
-            var has_background_changed = false;
-            
-            //Draw background sprites
-            for(var i = 0; i < background_length; i++){
-                has_background_changed = sprites_to_draw[0][i].draw();
-            }
-
-            document.body.onkeydown = function(e){
-                
-                if(e.keyCode == up_arrow){
-                    key_change = true;
-                    key_press["UP"] = e.keyCode;
-                } 
-                if(e.keyCode == right_arrow){
-                    //alert(String.fromCharCode(e.keyCode)+" --> "+e.keyCode);
-                    key_change = true;
-                    key_press["RIGHT"] = e.keyCode;
-                }
-                if(e.keyCode == left_arrow){
-                    key_change = true;
-                    key_press["LEFT"] = e.keyCode;
-                }
-                if(e.keyCode == down_arrow){
-                    key_change = true;
-                    key_press["DOWN"] = e.keyCode;
-                }
-                if(e.keyCode == space_bar){
-                    e.preventDefault()
-                    if(!pressed)
-                        key_press["SPACE_BAR"] = e.keyCode;
-                    pressed = true;
-                }
-                
-            
-            };
-            document.body.onkeyup = function(e){
-                //alert(e.keyCode);
-                
-                if(key_press["UP"] == e.keyCode){
-                    key_press["UP"] = null;
-                }
-                if(key_press["RIGHT"] == e.keyCode){
-                    key_press["RIGHT"] = null;
-                }
-                if(key_press["LEFT"] == e.keyCode){
-                    key_press["LEFT"] = null;
-                }
-                if(key_press["DOWN"] == e.keyCode){
-                    key_press["DOWN"] = null;
-                }
-
-                if(e.keyCode == space_bar){
-                    key_press["SPACE_BAR"] = null;
-                    pressed = false;
-                }
-
-                if(key_press["UP"] == null && key_press["RIGHT"] == null && key_press["LEFT"] == null && key_press["DOWN"] == null){
-                    key_change = false;
-                }
-                
-            };
-            
-            var ctx = canvas.getContext('2d');
-            ctx.clearRect(0, 0, canvas.width, canvas.height);
-            // ctx.globalCompositeOperation = 'destination-over';
-            ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+        last_Time = current_Time;
+        current_Time = Date.now();
+        delta_Time = current_Time - last_Time;
         
-        //Draw forground sprites
-            for(var sprite of sprites_to_draw[1]){
-                if (test_Bool === false) {
-                    console.log("Drawing: ", sprite);
-                }
-                if (typeof sprite.flock === "function") { 
-                    sprite.edges(canvas.width,canvas.height);
-                    sprite.draw({ 'foreground_sprites' : sprites_to_draw[1]
-                                            });
-                    sprite.flock(sprites_to_draw[1]);
-                } else {
-                    // This is a dictionary that is passed
-                    // This is so these values are accessable inside the .js class
-                    // Key / Value pair 
-                    sprite.draw( { 'has_background_changed' : has_background_changed,
-                                            'key_change' : key_change,
-                                            'key_press' : key_press,
-                                            'foreground_sprites' : sprites_to_draw[1],
-                                            'mouse_coords' : {'x' : mouse_x, 'y' : mouse_y},
-                                            'rock_data' : rock_data,
-                                            'firefly_count' : firefly_count
-                                            }
-                );
-                    if(sprite.constructor.name == "Sprite"){
-                        level_logic(sprite);
-                    }
+        var background_length = sprites_to_draw[0].length;
+        var forground_length  = sprites_to_draw[1].length;
+        var has_background_changed = false;
+        
+        //Draw background sprites
+        for(var i = 0; i < background_length; i++){
+            has_background_changed = sprites_to_draw[0][i].draw();
+        }
+
+        var ctx = canvas.getContext('2d');
+		ctx.clearRect(0, 0, canvas.width, canvas.height);
+		// ctx.globalCompositeOperation = 'destination-over';
+		ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+       
+	   //Draw forground sprites
+        for(var sprite of sprites_to_draw[1]){
+			if (test_Bool === false) {
+				// console.log("Drawing: ", sprite);
+			}
+            if (typeof sprite.flock === "function") { 
+                sprite.edges(canvas.width,canvas.height);
+                sprite.draw({ 'foreground_sprites' : sprites_to_draw[1]
+                                        });
+                sprite.flock(sprites_to_draw[1]);
+            } else {
+				// This is a dictionary that is passed
+				// This is so these values are accessable inside the .js class
+				// Key / Value pair 
+                sprite.draw( { 'has_background_changed' : has_background_changed,
+                                          'key_change' : key_change,
+                                          'key_press' : key_press,
+                                          'foreground_sprites' : sprites_to_draw[1],
+                                          'mouse_coords' : {'x' : mouse_x, 'y' : mouse_y},
+                                          'rock_data' : rock_data,
+                                          // For the sprite.js rock casting
+                                          'delta_Time' : delta_Time,
+                                          'spacebar_Pressed' : spacebar_Pressed,
+                                          'firefly_count' : firefly_count
+                                        }
+            );
+                if(sprite.constructor.name == "Sprite"){
+                    level_logic(sprite);
                 }
             }
-            test_Bool = true;
-            requestAnimationFrame(draw_loop);
         }
+
+        test_Bool = true;
+        requestAnimationFrame(draw_loop);
     }
 
-    
+    }
+
+    function draw_Text_Centered(text, y, font, color) {
+        var ctx = canvas.getContext('2d');
+        ctx.fillStyle = color; 
+        ctx.font = font;
+        // console.log("Current selected font: ", ctx.font);
+
+        var textWidth = ctx.measureText(text).width;
+        var x = (canvas.width - textWidth) / 2;
+
+        ctx.fillText(text, x, y);
+    }
+
 
     function resize(){
         canvas.width = window.innerWidth;
@@ -321,10 +340,7 @@
         mouse_y = event.clientY;
     }
 
-    
     function level_logic(sprite){
-            
-            
 
             var elapsed = new Date() - start;
 
@@ -383,21 +399,20 @@
                 $("#game_text").show();
                 $("#but_restart").show();
             }
+
                 
     }
 
     function random_background(){
         const random = Math.ceil(Math.random() * background_images.length);
-
-
         img.src = 'assets/bkg_imgs/bk_' + random + '.jpg';
     }
 
     function restartgame(){
         location.reload();
     }
+
 </script>
 
 </body>
 </html>
-

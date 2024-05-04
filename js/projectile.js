@@ -50,9 +50,9 @@ class projectile{
             this.cur_frame = 0;
         }
 
-            //If we're not idle, then we should be moving!
-            this.x += this.x_v;
-            this.y += this.y_v;
+        //If we're not idle, then we should be moving!
+        this.x += this.x_v;
+        this.y += this.y_v;
 
         this.check_bounds(state);
 
@@ -61,14 +61,10 @@ class projectile{
 
 
         this.update_animation();
-        
-        
 
         return false;
         
     }
-
-
 
     bound_hit(side){
             this.set_idle_state();
@@ -89,7 +85,6 @@ class projectile{
             this.delete_self(state);
         }
     }
-
 
     delete_self(state){
         for(var i = 0; i < state["foreground_sprites"].length; i++){
@@ -114,8 +109,7 @@ class projectile{
                         if(!others[i].small_enemy){ //don't delete rock if small enemy
                             others.splice(others.indexOf(this),1); //delete self
                         }
-                        others.splice(i, 1); //delete enemy
-                            
+                        others.splice(i, 1); //delete enemy  
                      }
                      
              }
@@ -123,29 +117,7 @@ class projectile{
      }
 
     update_animation(){
-        //Change animation correlated to the direction we're moving
-        
-        /*
-        if(this.x_v > 0 && this.y_v < 0){
-            this.state = "walk_NE";
-        } else if (this.x_v < 0 && this.y_v < 0){
-            this.state = "walk_NW";
-        } else if (this.x_v < 0 && this.y_v > 0){
-             this.state = "walk_SW";
-        } else if (this.x_v > 0 && this.y_v > 0){
-            this.state = "walk_SE";
-        } else if(this.x_v > 0 && this.y_v == 0){
-            this.state = "walk_E";
-        }else if(this.x_v < 0 && this.y_v == 0){
-            this.state = "walk_W";
-        }else if(this.y_v > 0 && this.x_v == 0){
-            this.state = "walk_S";
-        }else if(this.y_v < 0 && this.x_v == 0){
-            this.state = "walk_N";
-        }*/
-        
-
-        //Check if our new animation will put us out of bounds, and if so set current frame to 0
+        // Check if our new animation will put us out of bounds, and if so set current frame to 0
         if(this.cur_frame >= this.sprite_json[this.root_e][this.state].length){
             this.cur_frame = 0;
         }

@@ -149,11 +149,9 @@ class spider{
     update_animation(){
         //Change animation correlated to the direction we're moving
         
-        
-        
         if(this.x_v > 0){
             this.state = "walk_E";
-        }else if(this.x_v < 0){
+        }else if(this.x_v <= 0){
             this.state = "walk_W";
         }
         

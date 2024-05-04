@@ -31,12 +31,14 @@ TODO List:
 			position within a range)
 		- DONE (Sort of): Get ants spawning (Outside of map bounds)
 			- Spawning enemies towards the player
-		- TODO: Space bar moves the screen down (annoying)
-		- TODO: Ammo system (Like in my game)
+		- TODO: Fix the spiders stuttering
+		- DONE: Ammo system (Like in my game)
 			- Ammo recharges and the player can spray the rocks / bullets out if they want to
 		- TODO: Menu System
 		- TODO: Insta death
 			- Reset game states
+		- TODO: Death animations for ants, spider, ladybug
+			- When enemies die, play it
 		- TODO: Multiple characters? Guy and a girl? Different weapons for both?
 			- Guy throws a boulder to crush enemies
 				- Goes through small units
@@ -44,8 +46,6 @@ TODO List:
 				- Doesn't go through units buit shoots very fast 	
 		- IDEA: Instead of a rock, have it be like a gun that shoots light or a ray gun thing and that effect gets stronger the 
 		more fireflies you have. That could be really cool. Cat and mouse effect.
-		- TODO: Death animations for ants, spider, ladybug
-			- When enemies die, play it
 		- TODO: The image sizes aren't based off the screen size (Problem)
 			- Changing this would affect the speed of the units as well (Problem)
 			- We could just enfore that the screen be a certain size?
@@ -57,6 +57,7 @@ TODO List:
 		- Images not based off the screen size (Many bugs)
 	
 	Michael B
+		- DONE: Space bar moves the screen down (annoying)
 		- Remove black margin
 		- Animations
 		- Level logic
