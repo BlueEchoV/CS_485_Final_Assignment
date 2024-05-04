@@ -99,6 +99,7 @@ class Sprite {
                 this.fire_projectile(state);
                 // console.log("Rock read");
                 this.ammo -= 1;
+                $("#ammo").text("Ammo: " + this.ammo);
             }
         }
         if (this.ammo_Current_CD <= 0) {
@@ -106,6 +107,7 @@ class Sprite {
             console.log("ammo", this.ammo);
             this.ammo += 1;
             this.ammo_Current_CD = this.ammo_CD;
+            $("#ammo").text("Ammo: " + this.ammo);
         } else {
             this.ammo_Current_CD -= delta_Time;
         }
@@ -211,7 +213,7 @@ class Sprite {
                     
                     //If collided with enemy spider
                     if(others[i].enemy){
-                        this.gameover = true;
+                        //this.gameover = true;
                         // console.log("you died LOL");
                     }
                     if(others[i].constructor.name == "Boid"){

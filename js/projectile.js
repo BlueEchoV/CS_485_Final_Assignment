@@ -19,7 +19,7 @@ class projectile{
 
         this.count = 1;
 
-
+        this.damage = 1;
     }
 
     draw(state){
@@ -102,14 +102,16 @@ class projectile{
                  (this.x + this.sprite_json[this.root_e][this.state][this.cur_frame]['w']) >= others[i].x && 
                  this.y <= (others[i].y + others[i].sprite_json[others[i].root_e][others[i].state][others[i].cur_frame]['h']) && 
                  (this.y + this.sprite_json[this.root_e][this.state][this.cur_frame]['h']) >= others[i].y){
-                     
                      //If collided with enemy spider
                      if(others[i].enemy){
-                        
+                        others[i].hp -= this.damage;
+                        console.log("boss HP", others[i].hp);
                         if(!others[i].small_enemy){ //don't delete rock if small enemy
                             others.splice(others.indexOf(this),1); //delete self
                         }
-                        others.splice(i, 1); //delete enemy  
+                        if (others[i].hp <= 0) {
+                            others.splice(i, 1); //delete enemy  
+                        }
                      }
                      
              }

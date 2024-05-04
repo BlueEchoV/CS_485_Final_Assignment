@@ -3,7 +3,7 @@
     margin: -8px;
 }
 
-#points{
+#stat_container{
     font-size: 30px;
     color:#ffffff;
     position:absolute;
@@ -12,8 +12,13 @@
     margin: 10px;
   }
 
+  #game{
+    display:show
+  }
+
+
   
-  #game_text{
+  .game_text{
     position: fixed; /* Fixed positioning to keep it centered regardless of scrolling */
     top: 25%;
     left: 50%;
@@ -26,8 +31,13 @@
     font-size:100px;
     color:rgb(192, 0, 0);
     font-weight: bold;
-    animation: fadeInOut 5s;
     
+  }
+
+  #levelUp_text{
+    color:rgb(255, 255, 255);
+    opacity: 0;
+    animation: fadeInOut 10000ms;
   }
 
   .main_button { 
@@ -55,3 +65,8 @@
     100% { background-color: #ffffff34; box-shadow: 0 0 3px #9e9e9e; }
   }
 
+  @keyframes fadeInOut {
+    0% { opacity: 0; }
+    25% { opacity: 1; }
+    100% { opacity: 0; }
+  }
