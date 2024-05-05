@@ -24,7 +24,7 @@
     <div class="tutorial_format" id="tutorial_Text" style="display: none;">
         <p style="font-size: 64px;">Tutorial</p>
         <p>Use WASD to move your character. Spacebar to throw a rock.</p>
-        <p>Collect all the fireflies to advance to the next round level.</p>
+        <p>Collect all the fireflies to advance to the next level.</p>
         <p>Be careful not to let the enemies catch you because they will end the game.</p>
         <p>You pick up two rocks a second and can store an infinite amount. Spray and pray!</p>
         <p>Good luck and have fun!</p>
@@ -462,6 +462,7 @@
                 }
 
                 if(level % 3 == 0){
+
                     sprites_to_draw[1].push( new Boss(boss_data, "walk_E") );
                 }
 
