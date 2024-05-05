@@ -13,13 +13,93 @@
   }
 
   #game{
-    display:show
+    display:hide
   }
 
-
   
+  .menu_format{
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    display:none;
+    position: absolute;
+    margin: 20px;
+    text-align: center;
+    font-family: "Garamond", monospace;
+    font-size:96px;
+    color:rgb(200, 100, 0);
+    font-weight: bold;
+    white-space: nowrap;
+
+    border: 2px solid black;
+    background-color: black;
+    padding: 10px 25px;
+    width: auto;
+    box-sizing: border-box;
+  }
+
+  .menu_button {
+    display: block;
+    width: 35%;
+    margin: 20px auto;
+    font-family: "Garamond", monospace;
+    font-size: 64px;
+    color: rgb(255, 255, 255);
+    background-color: orange;
+    border: none;
+    padding: 0px 0px;
+    margin-top: 30px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+    }
+
+    .menu_button:hover {
+        background-color: darkred;
+    }
+
+    .tutorial_format {
+        position: fixed;
+        width: 50%;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        display: none;
+        text-align: center;
+        font-family: "Garamond", monospace;
+        font-size: 48px;
+        color: rgb(200, 100, 0);
+        font-weight: bold;
+        white-space: wrap;
+        border: 2px solid black;
+        background-color: black;
+        padding: 0px 30px;
+        line-height: 1;
+
+        box-sizing: border-box;
+    }
+
+    .tutorial_button {
+        display: block;
+        width: 30%;
+        margin: 50px auto;
+        font-family: "Garamond", monospace;
+        font-size: 64px;
+        color: rgb(255, 255, 255);
+        background-color: orange;
+        border: none;
+        padding: 0px 0px;
+        margin-top: 0px;
+        cursor: pointer;
+        transition: background-color 0.3s;
+    }
+
+    .tutorial_button:hover {
+        background-color: darkred;
+    }
+      
   .game_text{
-    position: fixed; /* Fixed positioning to keep it centered regardless of scrolling */
+    position: fixed;
     top: 25%;
     left: 50%;
     transform: translate(-50%, -50%);

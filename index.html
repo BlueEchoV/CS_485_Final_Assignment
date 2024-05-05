@@ -2,32 +2,60 @@
 <html>
 <head>
 <link rel="stylesheet" href="styles.css">
-<script src="https://code.jquery.com/jquery-3.7.1.js" integrity="sha256-eKhayi8LEQwp4NKxN+CfCh+3qOVUtJn3QNZ0TciWLP4=" crossorigin="anonymous"></script>
+    <script src="https://code.jquery.com/jquery-3.7.1.js" integrity="sha256-eKhayi8LEQwp4NKxN+CfCh+3qOVUtJn3QNZ0TciWLP4=" crossorigin="anonymous"></script>
 
-<script src="js/sprite.js"></script>
-<script src="js/spider.js"></script>
-<script src="js/boid.js"></script>
-<script src="js/projectile.js"></script>
-<script src="js/boss.js"></script>
-<script src="js/ant.js"></script>
+    <script src="js/sprite.js"></script>
+    <script src="js/spider.js"></script>
+    <script src="js/boid.js"></script>
+    <script src="js/projectile.js"></script>
+    <script src="js/boss.js"></script>
+    <script src="js/ant.js"></script>
 
 </head>
 <body style="">
     <canvas id='mycanvas' style="" onmousemove="coordinate(event)"></canvas>
 
+    <div class="menu_format" id="menu">
+        <div id="title_Text">Firefly Rumble</div>
+        <button class="menu_button" id="play_Button">Play</button>
+        <button class="menu_button" id="tutorial_Button">Tutorial</button>
+    </div>
+    <div class="tutorial_format" id="tutorial_Text" style="display: none;">
+        <p style="font-size: 64px;">Tutorial</p>
+        <p>Use WASD to move your character. Collect all the fireflies to advance to the next round.</p>
+        <p>Be careful not to let the enemies catch you because they will end the game.</p>
+        <p>Good luck and have fun!</p>
+        <button class="tutorial_button" id="return_Button">Return</button>
+    </div>
     <div id="game">
-    <div id="stat_container">
-    <div id="points">Score:</div>
-    <div id="ammo">Ammo:</div>
+        <div id="stat_container">
+            <div id="points">Score:</div>
+            <div id="ammo">Ammo:</div>
+        </div>
+            
+        <div class="game_text" id="gameOver_text">GAME OVER
+            <button class="main_button" id="but_restart" onclick="restartgame();">restart</button>
+        </div>
+        <div class="game_text" id="levelUp_text">LEVEL </div>
     </div>
-    
-    <div class = "game_text" id="gameOver_text">GAME OVER
 
-        <button class = "main_button" id="but_restart" onclick="restartgame();">restart</button>
-    </div>
-    <div class = "game_text" id="levelUp_text">LEVEL </div>
-    </div>
 <script>
+    var tutorialButton = document.getElementById("tutorial_Button");
+    var tutorialText = document.getElementById("tutorial_Text");
+    var menuText = document.getElementById("menu");
+
+    tutorialButton.addEventListener("click", function() {
+        menuText.style.display = "none";
+        tutorialText.style.display = "block";
+    });
+
+    var returnButton = document.getElementById("return_Button");
+
+    returnButton.addEventListener("click", function() {
+        tutorialText.style.display = "none";
+        menuText.style.display = "block";
+    });
+
 	var test_Bool = false;
 
     var font = "Garamond";
@@ -191,7 +219,8 @@
             ctx.drawImage(menu_Img, 0, 0, canvas.width, canvas.height);
             ctx.fillText("test",canvas.width,canvas.height)
         };
-        menu_Img.src = 'assets/bkg_imgs/menu_1.jpg';
+        // menu_Img.src = 'assets/bkg_imgs/menu_1.jpg';
+        menu_Img.src = 'assets/bkg_imgs/menu_2.jpg';
 
         setTimeout(() => {
             requestAnimationFrame(draw_loop);
@@ -261,7 +290,9 @@
 
     function draw_loop(){
         if (current_Game_State == "Menu") {
-            display_Menu();
+            console.log("Inside game_State");
+            // display_Menu();
+            $("#menu").show();
         }
         else if(current_Game_State == "Gameloop"){
             last_Time = current_Time;
