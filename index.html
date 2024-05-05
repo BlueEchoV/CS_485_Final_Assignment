@@ -80,11 +80,17 @@
     var level = 1;
     
     var current_Time = 0;
-    var last_Time = Date.now();;
+    var last_Time = Date.now();
     var delta_Time = 0;
 
     var start = new Date();
     var elapsed = 0;
+    var animation_delta_time = 0;
+    var last_T = Date.now();
+
+    //set FPS
+    var setFPS = 120;
+    var fps_interval = 1000 / setFPS;
 
     var mouse_x;
     var mouse_y;
@@ -147,7 +153,6 @@
                 data["boss"][boss_states[i]][j]['img'].src = 'assets/enemy_boss_imgs/' + boss_states[i] + '/' + j + '.png';
             }
         }
-        sprites_to_draw[1].push(new Boss(data, "walk_E"));
         boss_data = data;
 
         // Fetch Spider Data
@@ -284,20 +289,17 @@
         
     };
 
-    function display_Menu() {
-        draw_Text_Centered("Firefly Rumble", ((canvas.height / 10) * 3.5), "bold 128px " + font, "Orange");
-    }
-
     function draw_loop(){
-        if (current_Game_State == "Menu") {
-            console.log("Inside game_State");
-            // display_Menu();
-            $("#menu").show();
-        }
-        else if(current_Game_State == "Gameloop"){
+        requestAnimationFrame(draw_loop);
+        var now = Date.now();
+        animation_delta_time = now - last_T;
+
+        if(gameover == false && animation_delta_time > fps_interval){
             last_Time = current_Time;
             current_Time = Date.now();
             delta_Time = current_Time - last_Time;
+
+            last_T = now - (animation_delta_time % fps_interval);
             
             var background_length = sprites_to_draw[0].length;
             var forground_length  = sprites_to_draw[1].length;
@@ -309,34 +311,35 @@
             }
 
             var ctx = canvas.getContext('2d');
-    		ctx.clearRect(0, 0, canvas.width, canvas.height);
-    		// ctx.globalCompositeOperation = 'destination-over';
-    		ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
-           
-    	   //Draw forground sprites
+
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            // ctx.globalCompositeOperation = 'destination-over';
+            ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+        
+        //Draw forground sprites
             for(var sprite of sprites_to_draw[1]){
-    			if (test_Bool === false) {
-    				console.log("Drawing: ", sprite);
-    			}
+                if (test_Bool === false) {
+                    // console.log("Drawing: ", sprite);
+                }
                 if (typeof sprite.flock === "function") { 
                     sprite.edges(canvas.width,canvas.height);
                     sprite.draw({ 'foreground_sprites' : sprites_to_draw[1]
                                             });
                     sprite.flock(sprites_to_draw[1]);
                 } else {
-    				// This is a dictionary that is passed
-    				// This is so these values are accessable inside the .js class
-    				// Key / Value pair 
+                    // This is a dictionary that is passed
+                    // This is so these values are accessable inside the .js class
+                    // Key / Value pair 
                     sprite.draw( { 'has_background_changed' : has_background_changed,
-                                              'key_change' : key_change,
-                                              'key_press' : key_press,
-                                              'foreground_sprites' : sprites_to_draw[1],
-                                              'mouse_coords' : {'x' : mouse_x, 'y' : mouse_y},
-                                              'rock_data' : rock_data,
-                                              // For the sprite.js rock casting
-                                              'delta_Time' : delta_Time,
-                                              'spacebar_Pressed' : spacebar_Pressed,
-                                              'firefly_count' : firefly_count
+                                            'key_change' : key_change,
+                                            'key_press' : key_press,
+                                            'foreground_sprites' : sprites_to_draw[1],
+                                            'mouse_coords' : {'x' : mouse_x, 'y' : mouse_y},
+                                            'rock_data' : rock_data,
+                                            // For the sprite.js rock casting
+                                            'delta_Time' : delta_Time,
+                                            'spacebar_Pressed' : spacebar_Pressed,
+                                            'firefly_count' : firefly_count
                                             }
                 );
                     if(sprite.constructor.name == "Sprite"){
@@ -344,6 +347,7 @@
                     }
                 }
             }
+
             test_Bool = true;
             requestAnimationFrame(draw_loop);
         }
@@ -409,8 +413,12 @@
                 }
 
                 //spawn ants
-                for(let i=0;i<firefly_count;i++){
+                for(let i=0;i<firefly_count/2;i++){
                     sprites_to_draw[1].push( new Ant(ant_data, "walk_E") );
+                }
+
+                if(level % 3 == 0){
+                    sprites_to_draw[1].push( new Boss(boss_data, "walk_E") );
                 }
 
                 //do this only once per level up

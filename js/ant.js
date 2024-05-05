@@ -40,72 +40,58 @@ class Ant{
 		this.separation_Scalar = 1.0;
 		
 		// Random position
-        this.x = this.random_pos_x();
-        this.y = this.random_pos_y();
+        this.x = 0;
+        this.y = 0;
+        this.random_Off_Screen_Spawn_Position();
 		
 		// Random velocity
         this.x_v = this.random_velo();
         this.y_v = this.random_velo();
     }
-	
-	edges(width, height) {
-		if (this.x > width + 50) {
-			this.x = -50;
-		} else if (this.x < -50) {
-			this.x = width + 50;
-		}
-		if (this.y > height + 50) {
-			this.y = -50;
-		} else if (this.y < -50) {
-			this.y = height + 50;
+
+	random_Off_Screen_Spawn_Position() {
+		// Generate a random zone to spawn the enemy in
+		var zone = 4 * Math.random();
+		
+		// North
+		if (zone < 1) {
+			this.x = Math.random() * window.innerWidth;
+			// inverted coordinate systemm
+			this.y = -this.sprite_json[this.root_e][this.state][this.cur_frame]['w'];
+		// South
+		} else if (zone >= 1 && zone < 2) {
+			this.x = Math.random() * window.innerWidth;
+			this.y = 0;
+		// East
+		} else if (zone >= 2 && zone < 3) {
+			this.x = window.innerWidth;
+			this.y = Math.random() * window.innerHeight;
+		// West
+		} else {
+			// Spawn the enemy off screen if it spawns in the west
+			this.x = -this.sprite_json[this.root_e][this.state][this.cur_frame]['w'];
+			this.y = Math.random() * window.innerHeight;
 		}
 	}
 	
-	
-	/*
-	update() {
-		// Update velocity
-		this.x_v += this.acceleration_X;
-		this.y_v += this.acceleration_Y;
-
-		// Clamp the velocity to maxSpeed
-		let speed = Math.sqrt(this.x_v * this.x_v + this.y_v * this.y_v);
-		if (speed > this.maxSpeed) {
-			this.x_v = (this.x_v / speed) * this.maxSpeed;
-			this.y_v = (this.y_v / speed) * this.maxSpeed;
+	edges(width, height) {
+		if (this.x > width) {
+			this.x = -this.sprite_json[this.root_e][this.state][this.cur_frame]['w'];
+		} else if (this.x < -this.sprite_json[this.root_e][this.state][this.cur_frame]['w']) {
+			this.x = width;
 		}
-
-		// Update position
-		this.x += this.x_v;
-		this.y += this.y_v;
-
-		// Reset acceleration to 0 after each update
-		this.acceleration_X = 0;
-		this.acceleration_Y = 0;
-	}*/
+		if (this.y > height ) {
+			this.y = -this.sprite_json[this.root_e][this.state][this.cur_frame]['h'];
+		} else if (this.y < -this.sprite_json[this.root_e][this.state][this.cur_frame]['h']) {
+			this.y = height 
+		}
+	}
+	
 	draw(state){
         var ctx = canvas.getContext('2d');
-        //console.log(state['key_change']);
-
-        /*if(this.sprite_json[this.root_e][this.state][this.cur_frame]['img'] == null){
-            console.log("loading");
-            this.sprite_json[this.root_e][this.state][this.cur_frame]['img'] = new Image();
-            this.sprite_json[this.root_e][this.state][this.cur_frame]['img'].src = 'Penguins/' + this.root_e + '/' + this.state + '/' + this.cur_frame + '.png';
-        }*/
-		
-		/*
-		NOTE: Another strategy for clearing the background before drawing but it is very costly with a ton of sprites
-        if( this.cur_bk_data != null){
-            ctx.putImageData(this.cur_bk_data , (this.x - this.x_v) , (this.y - this.y_v));
-        }
-
-        this.cur_bk_data = ctx.getImageData(this.x, this.y, 
-            this.sprite_json[this.root_e][this.state][this.cur_frame]['w'], 
-            this.sprite_json[this.root_e][this.state][this.cur_frame]['h']);
-		*/
+       
 		// Draw the sprite
 		ctx.drawImage(this.sprite_json[this.root_e][this.state][this.cur_frame]['img'], this.x, this.y ); // Draw the sprite
-		// ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
 
         this.count += 1;
 
@@ -118,25 +104,13 @@ class Ant{
             //console.log(this.cur_frame);
             this.cur_frame = 0;
         }
-            
-        // Update velocity
-		this.x_v += this.acceleration_X;
-		this.y_v += this.acceleration_Y;
+        
+		if(this.detect_on_screen())
+			this.boid_behavior();
+		else
+			this.track_player(state['foreground_sprites']);
 
-		// Clamp the velocity to maxSpeed
-		let speed = Math.sqrt(this.x_v * this.x_v + this.y_v * this.y_v);
-		if (speed > this.maxSpeed) {
-			this.x_v = (this.x_v / speed) * this.maxSpeed;
-			this.y_v = (this.y_v / speed) * this.maxSpeed;
-		}
-
-		// Update position
-		this.x += this.x_v;
-		this.y += this.y_v;
-
-		// Reset acceleration to 0 after each update
-		this.acceleration_X = 0;
-		this.acceleration_Y = 0;
+        
 
         this.update_animation();
 
@@ -344,4 +318,39 @@ class Ant{
             this.cur_frame = 0;
         }
     }
+
+	boid_behavior(){
+		// Update velocity
+		this.x_v += this.acceleration_X;
+		this.y_v += this.acceleration_Y;
+
+		// Clamp the velocity to maxSpeed
+		let speed = Math.sqrt(this.x_v * this.x_v + this.y_v * this.y_v);
+		if (speed > this.maxSpeed) {
+			this.x_v = (this.x_v / speed) * this.maxSpeed;
+			this.y_v = (this.y_v / speed) * this.maxSpeed;
+		}
+
+		// Update position
+		this.x += this.x_v;
+		this.y += this.y_v;
+
+		// Reset acceleration to 0 after each update
+		this.acceleration_X = 0;
+		this.acceleration_Y = 0;
+	}
+
+	detect_on_screen(){
+		
+			 //Check if ant is on the screen
+			 if( this.x <= (canvas.width) &&
+				 (this.x + this.sprite_json[this.root_e][this.state][this.cur_frame]['w']) >= 0 && 
+				 this.y <= (canvas.height) && 
+				 (this.y + this.sprite_json[this.root_e][this.state][this.cur_frame]['h']) >= 0){
+					return true;
+			 } else {
+				return false;
+			 }
+		 
+	 }
 }
