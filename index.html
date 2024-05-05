@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
+<link href='https://fonts.googleapis.com/css?family=Garamond' rel='stylesheet'>
 <link rel="stylesheet" href="styles.css">
     <script src="https://code.jquery.com/jquery-3.7.1.js" integrity="sha256-eKhayi8LEQwp4NKxN+CfCh+3qOVUtJn3QNZ0TciWLP4=" crossorigin="anonymous"></script>
 
@@ -22,8 +23,10 @@
     </div>
     <div class="tutorial_format" id="tutorial_Text" style="display: none;">
         <p style="font-size: 64px;">Tutorial</p>
-        <p>Use WASD to move your character. Collect all the fireflies to advance to the next round.</p>
+        <p>Use WASD to move your character. Spacebar to throw a rock.</p>
+        <p>Collect all the fireflies to advance to the next round level.</p>
         <p>Be careful not to let the enemies catch you because they will end the game.</p>
+        <p>You pick up two rocks a second and can store an infinite amount. Spray and pray!</p>
         <p>Good luck and have fun!</p>
         <button class="tutorial_button" id="return_Button">Return</button>
     </div>
@@ -57,10 +60,11 @@
     });
 
     var play_Button = document.getElementById("play_Button");
-    
+
     play_Button.addEventListener("click", function() {
         tutorialText.style.display = "none";
         menuText.style.display = "none";
+        $("#game").show();
         current_Game_State = "gameloop";
     });
 
@@ -136,7 +140,6 @@
 
     //Level up logic
     var spawn = true;
-    var firefly_count = 10;
     var level_up = true;
     var frequency = 5;
     var spider_scale = 1;
@@ -186,7 +189,8 @@
                 data["player"][player_states[i]][j]['img'].src = 'assets/player_imgs/' + player_states[i] + '/' + j + '.png';
             }
         }
-        sprites_to_draw[1].push(new Sprite(data, 150, 600, "idle"));
+        sprites_to_draw[1].push(new Sprite(data, canvas.width/2, canvas.height/2, "idle"));
+        player_data = data;
 
         // Fetch Firefly Data
         response = await fetch("assets/firefly_imgs/animationData.json");
@@ -397,6 +401,13 @@
         mouse_y = event.clientY;
     }
 
+    var firefly_count = 2;
+    var firefly_speed = 0.8;
+    var ant_count = 100;
+    var ant_speed = 1.0;
+
+    var first_Level = true;
+
     function level_logic(sprite){
 
             var elapsed = new Date() - start;
@@ -414,21 +425,40 @@
                 
                 random_background(); //change background
 
-                firefly_count = Math.ceil(firefly_count*1.1);//increase firefly count by 10% each level
+                firefly_count = Math.ceil(firefly_count);//increase firefly count by 10% each level
                 //spider_speed *= 1.1; //increase speed of spider by 10% each level
                 spider_scale = Math.ceil(level/3); //quantity of spiders spawning per wave
                 frequency = 5; //seconds between spawning spiders
 
                 $("#points").text("Score: 0/" + firefly_count);
 
+                if (!first_Level) {
+                    firefly_speed *= 1.1;
+                    if (firefly_count < 12) {
+                        firefly_count *= 2.0;
+                    }
+
+                    ant_count *= 1.0;
+                    // Increase by 10% each pas
+                    ant_speed += 0.25;
+                    console.log("Ant speed", ant_speed);
+
+                } else {
+                    first_Level = false;
+                }
+                console.log("ant speed", ant_speed);
+                sprites_to_draw[1].splice(0, sprites_to_draw[1].length);
+
+                sprites_to_draw[1].push(new Sprite(player_data, canvas.width/2, canvas.height/2, "idle"));
+
                 //spawn fireflies
                 for(let i=0;i<firefly_count;i++){
-                    sprites_to_draw[1].push( new Boid(firefly_data, "idle") );
+                    sprites_to_draw[1].push( new Boid(firefly_data, "idle", firefly_speed) );
                 }
 
                 //spawn ants
-                for(let i=0;i<firefly_count/2;i++){
-                    sprites_to_draw[1].push( new Ant(ant_data, "walk_E") );
+                for(let i=0;i<ant_count;i++){
+                    sprites_to_draw[1].push( new Ant(ant_data, "walk_E", ant_speed) );
                 }
 
                 if(level % 3 == 0){
@@ -443,7 +473,7 @@
             if(Math.floor(elapsed/1000) % frequency == 0){
                 if(spawn){
                     for(let i=0;i<spider_scale;i++){
-                        sprites_to_draw[1].push( new spider(spider_data, "walk_E", spider_speed) );
+                        sprites_to_draw[1].push( new spider(spider_data, "walk_E", spider_speed ) );
                     }
                     
                 }

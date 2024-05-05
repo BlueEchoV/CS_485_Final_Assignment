@@ -1,5 +1,5 @@
 class Ant{
-	constructor(sprite_json,start_state){
+	constructor(sprite_json,start_state, max_Speed){
 		console.log("Inside constructor");
         this.sprite_json = sprite_json;
 
@@ -20,24 +20,24 @@ class Ant{
 		this.acceleration_Y = 0;
 
 		// Flocking varibles
-        this.maxforce = 0.01;
+        this.maxforce = .01;
 		// MAKE SURE THIS IS DEFINED BEFORE WE CALL 
 		// RANDOM_POS_X
-        this.maxSpeed = 2;
-		this.perception = 50;
+        this.maxSpeed = max_Speed;
+		this.perception = 75;
 
 		this.enemy = true;
 		this.small_enemy = true;
 		
 		// Alignment: Helps a boid to steer towards the 
 		// average heading of its local flockmates.
-		this.alignment_Scalar = 0.5;
+		this.alignment_Scalar = 10.0;
 		// Cohesion: Draws a boid towards the average 
 		// position of nearby flockmates, promoting group cohesion.
-		this.cohesion_Scalar = 1.0;
+		this.cohesion_Scalar = 10;
 		// Separation: Drives a boid to move away from 
 		// flockmates that are too close, preventing overcrowding.
-		this.separation_Scalar = 1.0;
+		this.separation_Scalar = 10.0;
 		
 		// Random position
         this.x = 0;

@@ -15,7 +15,7 @@ class projectile{
         this.x_v = x_v;
         this.y_v = y_v;
 
-        this.set_v = 1; //speed of the object
+        this.set_v = 0.5; //speed of the object
 
         this.count = 1;
 

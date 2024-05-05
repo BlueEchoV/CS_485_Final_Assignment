@@ -14,7 +14,7 @@ class Sprite {
         this.x_v = 0;
         this.y_v = 0;
 
-        this.set_v = 5;
+        this.set_v = 4;
 
         this.idle = false;
 
@@ -24,10 +24,11 @@ class Sprite {
 
         this.gameover = false;
 
-        this.projectile_speed = 12;
+        this.projectile_speed = 5;
         this.ammo = 0;
         // Milliseconds
-        this.ammo_CD = 750;
+        // 2 rounds every second
+        this.ammo_CD = 500;
         this.ammo_Current_CD = 0;
 
         this.rock_Current_Fire_Interval = 0;
@@ -206,22 +207,42 @@ class Sprite {
     detect_collision(others, firefly_count){
        for(var i = 0; i < others.length; i++){
             //Check if collided with any sprites
-            if( this.x <= (others[i].x + others[i].sprite_json[others[i].root_e][others[i].state][others[i].cur_frame]['w']) &&
-                (this.x + this.sprite_json[this.root_e][this.state][this.cur_frame]['w']) >= others[i].x && 
-                this.y <= (others[i].y + others[i].sprite_json[others[i].root_e][others[i].state][others[i].cur_frame]['h']) && 
-                (this.y + this.sprite_json[this.root_e][this.state][this.cur_frame]['h']) >= others[i].y){
-                    
-                    //If collided with enemy spider
-                    if(others[i].enemy){
+            if (others[i].enemy) {
+                if( this.x <= (others[i].x + others[i].sprite_json[others[i].root_e][others[i].state][others[i].cur_frame]['w'] / 2) &&
+                    (this.x + this.sprite_json[this.root_e][this.state][this.cur_frame]['w']) >= others[i].x && 
+                    this.y <= (others[i].y + others[i].sprite_json[others[i].root_e][others[i].state][others[i].cur_frame]['h'] / 2) && 
+                    (this.y + this.sprite_json[this.root_e][this.state][this.cur_frame]['h']) >= others[i].y){
                         
-                        current_Game_State = "gameover";
-                        // console.log("you died LOL");
-                    }
-                    if(others[i].constructor.name == "Boid"){
-                        others.splice(i, 1);
-                        this.points += 1;
-                        $("#points").text("Score: " + this.points + "/" + firefly_count);
-                    }
+                        //If collided with enemy spider
+                        if(others[i].enemy){
+
+                            current_Game_State = "gameover";
+                            // console.log("you died LOL");
+                        }
+                        if(others[i].constructor.name == "Boid"){
+                            others.splice(i, 1);
+                            this.points += 1;
+                            $("#points").text("Score: " + this.points + "/" + firefly_count);
+                        }
+                }
+            } else {
+                if( this.x <= (others[i].x + others[i].sprite_json[others[i].root_e][others[i].state][others[i].cur_frame]['h'] * 2) &&
+                    (this.x + this.sprite_json[this.root_e][this.state][this.cur_frame]['h'] * 2) >= others[i].x && 
+                    this.y <= (others[i].y + others[i].sprite_json[others[i].root_e][others[i].state][others[i].cur_frame]['h'] * 2) && 
+                    (this.y + this.sprite_json[this.root_e][this.state][this.cur_frame]['h'] * 2) >= others[i].y){
+                        
+                        //If collided with enemy spider
+                        if(others[i].enemy){
+
+                            current_Game_State = "gameover";
+                            // console.log("you died LOL");
+                        }
+                        if(others[i].constructor.name == "Boid"){
+                            others.splice(i, 1);
+                            this.points += 1;
+                            $("#points").text("Score: " + this.points + "/" + firefly_count);
+                        }
+                }
             }
         }
     }

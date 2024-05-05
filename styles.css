@@ -13,9 +13,8 @@
   }
 
   #game{
-    display:hide
+    display:none
   }
-
   
   .menu_format{
     position: fixed;
@@ -41,7 +40,7 @@
 
   .menu_button {
     display: block;
-    width: 35%;
+    width: 40%;
     margin: 20px auto;
     font-family: "Garamond", monospace;
     font-size: 64px;
