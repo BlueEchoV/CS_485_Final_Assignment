@@ -56,6 +56,15 @@
         menuText.style.display = "block";
     });
 
+    var play_Button = document.getElementById("play_Button");
+    
+    play_Button.addEventListener("click", function() {
+        tutorialText.style.display = "none";
+        menuText.style.display = "none";
+        current_Game_State = "gameloop";
+    });
+
+
 	var test_Bool = false;
 
     var font = "Garamond";
@@ -64,7 +73,7 @@
     const sprites_to_draw = new Array(2); 
     var draw_loop_timeout;
     var menu_Img = new Image();
-    var firefly_Img = new Image();
+    var img = new Image();
     /*
     const up_arrow = 38;
     const down_arrow = 40;
@@ -137,7 +146,7 @@
     sprites_to_draw[0] = new Array(0); //background and 
     sprites_to_draw[1] = new Array(0); //forground
 
-    var current_Game_State = "Menu";
+    var current_Game_State = "menu";
 
 	load_Jsons(); 
 
@@ -226,6 +235,8 @@
         };
         // menu_Img.src = 'assets/bkg_imgs/menu_1.jpg';
         menu_Img.src = 'assets/bkg_imgs/menu_2.jpg';
+        menuText.style.display = "block";
+        tutorialText.style.display = "none";
 
         setTimeout(() => {
             requestAnimationFrame(draw_loop);
@@ -294,62 +305,65 @@
         var now = Date.now();
         animation_delta_time = now - last_T;
 
-        if(gameover == false && animation_delta_time > fps_interval){
-            last_Time = current_Time;
-            current_Time = Date.now();
-            delta_Time = current_Time - last_Time;
+        if (current_Game_State == "gameloop") {
+            if(animation_delta_time > fps_interval){
+                last_Time = current_Time;
+                current_Time = Date.now();
+                delta_Time = current_Time - last_Time;
 
-            last_T = now - (animation_delta_time % fps_interval);
-            
-            var background_length = sprites_to_draw[0].length;
-            var forground_length  = sprites_to_draw[1].length;
-            var has_background_changed = false;
-            
-            //Draw background sprites
-            for(var i = 0; i < background_length; i++){
-                has_background_changed = sprites_to_draw[0][i].draw();
-            }
-
-            var ctx = canvas.getContext('2d');
-
-            ctx.clearRect(0, 0, canvas.width, canvas.height);
-            // ctx.globalCompositeOperation = 'destination-over';
-            ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
-        
-        //Draw forground sprites
-            for(var sprite of sprites_to_draw[1]){
-                if (test_Bool === false) {
-                    // console.log("Drawing: ", sprite);
+                last_T = now - (animation_delta_time % fps_interval);
+                
+                var background_length = sprites_to_draw[0].length;
+                var forground_length  = sprites_to_draw[1].length;
+                var has_background_changed = false;
+                
+                //Draw background sprites
+                for(var i = 0; i < background_length; i++){
+                    has_background_changed = sprites_to_draw[0][i].draw();
                 }
-                if (typeof sprite.flock === "function") { 
-                    sprite.edges(canvas.width,canvas.height);
-                    sprite.draw({ 'foreground_sprites' : sprites_to_draw[1]
-                                            });
-                    sprite.flock(sprites_to_draw[1]);
-                } else {
-                    // This is a dictionary that is passed
-                    // This is so these values are accessable inside the .js class
-                    // Key / Value pair 
-                    sprite.draw( { 'has_background_changed' : has_background_changed,
-                                            'key_change' : key_change,
-                                            'key_press' : key_press,
-                                            'foreground_sprites' : sprites_to_draw[1],
-                                            'mouse_coords' : {'x' : mouse_x, 'y' : mouse_y},
-                                            'rock_data' : rock_data,
-                                            // For the sprite.js rock casting
-                                            'delta_Time' : delta_Time,
-                                            'spacebar_Pressed' : spacebar_Pressed,
-                                            'firefly_count' : firefly_count
-                                            }
-                );
-                    if(sprite.constructor.name == "Sprite"){
-                        level_logic(sprite);
+
+                var ctx = canvas.getContext('2d');
+
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+                // ctx.globalCompositeOperation = 'destination-over';
+                ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+            
+            //Draw forground sprites
+                for(var sprite of sprites_to_draw[1]){
+                    if (test_Bool === false) {
+                        // console.log("Drawing: ", sprite);
+                    }
+                    if (typeof sprite.flock === "function") { 
+                        sprite.edges(canvas.width,canvas.height);
+                        sprite.draw({ 'foreground_sprites' : sprites_to_draw[1]
+                                                });
+                        sprite.flock(sprites_to_draw[1]);
+                    } else {
+                        // This is a dictionary that is passed
+                        // This is so these values are accessable inside the .js class
+                        // Key / Value pair 
+                        sprite.draw( { 'has_background_changed' : has_background_changed,
+                                                'key_change' : key_change,
+                                                'key_press' : key_press,
+                                                'foreground_sprites' : sprites_to_draw[1],
+                                                'mouse_coords' : {'x' : mouse_x, 'y' : mouse_y},
+                                                'rock_data' : rock_data,
+                                                // For the sprite.js rock casting
+                                                'delta_Time' : delta_Time,
+                                                'spacebar_Pressed' : spacebar_Pressed,
+                                                'firefly_count' : firefly_count,
+                                                'current_Game_State' : current_Game_State
+                                                }
+                    );
+                        if(sprite.constructor.name == "Sprite"){
+                            level_logic(sprite);
+                        }
                     }
                 }
-            }
 
-            test_Bool = true;
-            requestAnimationFrame(draw_loop);
+                test_Bool = true;
+                requestAnimationFrame(draw_loop);
+            }
         }
 
     }
@@ -447,7 +461,7 @@
             }
 
             //Check if game over
-            if(sprite.gameover == true){
+            if(current_Game_State == "gameover"){
                 gameover = true;
                 $("#gameOver_text").show();
                 $("#but_restart").show();

@@ -213,7 +213,8 @@ class Sprite {
                     
                     //If collided with enemy spider
                     if(others[i].enemy){
-                        this.gameover = true;
+                        
+                        current_Game_State = "gameover";
                         // console.log("you died LOL");
                     }
                     if(others[i].constructor.name == "Boid"){
