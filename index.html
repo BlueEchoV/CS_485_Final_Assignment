@@ -430,8 +430,6 @@
                 spider_scale = Math.ceil(level/3); //quantity of spiders spawning per wave
                 frequency = 5; //seconds between spawning spiders
 
-                $("#points").text("Score: 0/" + firefly_count);
-
                 if (!first_Level) {
                     firefly_speed *= 1.1;
                     if (firefly_count < 12) {
@@ -446,6 +444,9 @@
                 } else {
                     first_Level = false;
                 }
+
+                $("#points").text("Score: 0/" + firefly_count);
+
                 console.log("ant speed", ant_speed);
                 sprites_to_draw[1].splice(0, sprites_to_draw[1].length);
 
